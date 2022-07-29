@@ -8,6 +8,7 @@ const User = require('../models/userModel')
 // @access  Private
 const getGoals = asyncHandler(async (req, res) => {
   const goals = await Goal.find({ user: req.user.id })
+
   res.status(200).json(goals)
 })
 
@@ -45,10 +46,10 @@ const updateGoal = asyncHandler(async (req, res) => {
     throw new Error('User not found')
   }
 
-  // Make sure the logged in user match the goal's user
-  if (goal.user.toString != req.user.id) {
+  // Make sure the logged in user matches the goal's user
+  if (goal.user.toString() !== req.user.id) {
     res.status(401)
-    throw new Error('User not authorize')
+    throw new Error('User not authorized')
   }
 
   const updatedGoal = await Goal.findByIdAndUpdate(req.params.id, req.body, {
@@ -75,14 +76,15 @@ const deleteGoal = asyncHandler(async (req, res) => {
     throw new Error('User not found')
   }
 
-  // Make sure the logged in user match the goal's user
-  if (goal.user.toString() != req.user.id) {
+  // Make sure the logged in user matches the goal's user
+  if (goal.user.toString() !== req.user.id) {
     res.status(401)
-    throw new Error('User not authorize')
+    throw new Error('User not authorized')
   }
-  const deletedGoal = await Goal.findByIdAndDelete(req.params.id, req.body)
 
-  res.status(200).json(deletedGoal)
+  await goal.remove()
+
+  res.status(200).json({ id: req.params.id })
 })
 
 module.exports = {
