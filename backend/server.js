@@ -12,6 +12,9 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 
 app.use('/api/goals', require('./routes/goalRoutes'))
+app.use('/api/riders', require('./routes/riderRoutes'))
+app.use('/api/items', require('./routes/itemRoutes'))
+app.use('/api/itemsets', require('./routes/itemsetRoutes'))
 app.use('/api/users', require('./routes/userRoutes'))
 
 app.use(errorHandler)
