@@ -31,10 +31,10 @@ export const createRider = createAsyncThunk(
 // Get user's rider
 export const getRiders = createAsyncThunk(
   'riders/getAll',
-  async (_, thunkAPI) => {
+  async (query = null, thunkAPI) => {
     try {
       const token = thunkAPI.getState().auth.user.token
-      return await riderService.getRiders(token)
+      return await riderService.getRiders(token, query)
     } catch (error) {
       const message =
         (error.response &&

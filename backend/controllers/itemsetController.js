@@ -1,7 +1,6 @@
 const mongoose = require('mongoose')
 const asyncHandler = require('express-async-handler')
 const Itemset = require('../models/ItemsetModel')
-const itemsetModel = require('../models/ItemsetModel')
 
 // @desc    Get itemsets
 // @route   GET /api/itemsets

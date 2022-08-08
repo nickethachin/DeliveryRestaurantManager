@@ -6,6 +6,8 @@ import Dashboard from './pages/Dashboard'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Playground from './pages/Playground'
+import OrderManager from './pages/OrderManager'
+import RiderManager from './pages/RiderManager'
 
 function App() {
   return (
@@ -16,6 +18,8 @@ function App() {
           <Routes>
             <Route path='/' element={<Dashboard />} />
             <Route path='/playground' element={<Playground />} />
+            <Route path='/order-manager' element={<OrderManager />} />
+            <Route path='/rider-manager' element={<RiderManager />} />
             <Route path='/login' element={<Login />} />
             <Route path='/register' element={<Register />} />
           </Routes>
