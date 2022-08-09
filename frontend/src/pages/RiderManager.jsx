@@ -1,4 +1,4 @@
-import { IconButton, Stack } from '@mui/material';
+import { IconButton, Paper, Stack } from '@mui/material';
 import Box from '@mui/material/Box';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -8,6 +8,7 @@ import {
 	reset as itemsetReset,
 } from '../features/itemsets/itemsetSlice';
 import {
+	createRider,
 	getRiders,
 	reset as riderReset,
 } from '../features/riders/riderSlice';
@@ -52,6 +53,14 @@ const RiderManager = () => {
 	const [tabValue, setTabValue] = useState(0);
 	const [selectTab, setSelectTab] = useState();
 
+	// Form data state
+	const [formData, setFormData] = useState({
+		name: '',
+		fees: '',
+		tax: '',
+		gas: '',
+	});
+
 	// Get riders
 	const {
 		riders,
@@ -84,12 +93,24 @@ const RiderManager = () => {
 		return () => dispatch(itemsetReset());
 	}, [navigate, isItemsetError, itemsetMessage, dispatch]);
 
+	function handleSaveClick(event) {
+		event.preventDefault();
+		dispatch(createRider(formData));
+		setFormData({
+			name: '',
+			fees: '',
+			tax: '',
+			gas: '',
+		});
+		setIsCreating(false);
+	}
+
 	// Show spinner if any state is loading
 	if (isItemsetLoading || isRiderLoading)
 		return <Spinner />;
 
 	return (
-		<Box>
+		<Box component={Paper}>
 			<Stack
 				direction='row'
 				spacing={3}
@@ -111,15 +132,25 @@ const RiderManager = () => {
 					setSelectTab={setSelectTab}
 				/>
 				{isCreating ? (
-					<IconButton>
+					<IconButton onClick={handleSaveClick}>
 						<SaveIcon />
 					</IconButton>
 				) : (
-					<DeleteRiderButton selectTab={selectTab} />
+					<DeleteRiderButton
+						riders={riders}
+						selectTab={selectTab}
+						setSelectTab={setSelectTab}
+						setTabValue={setTabValue}
+					/>
 				)}
 			</Stack>
 			<Stack direction='row' sx={{ margin: 2 }}>
-				{isCreating ? <CreateForm /> : null}
+				{isCreating ? (
+					<CreateForm
+						formData={formData}
+						setFormData={setFormData}
+					/>
+				) : null}
 			</Stack>
 			<PriceTable
 				user={user}

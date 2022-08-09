@@ -7,7 +7,7 @@ import {
 	TableRow,
 } from '@mui/material';
 import PropTypes from 'prop-types';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import riderService from '../../features/riders/riderService';
 import Spinner from '../Spinner';
 import EditableRow from './EditableRow';
@@ -20,8 +20,8 @@ function TabPanel(props) {
 		<div
 			role='tabpanel'
 			hidden={value !== index}
-			id={`simple-tabpanel-${index}`}
-			aria-labelledby={`simple-tab-${index}`}
+			id={`tabPanel-${index}`}
+			aria-labelledby={`tab-${index}`}
 			{...other}
 		>
 			{value === index && (
@@ -79,6 +79,7 @@ const PriceTable = ({
 		} catch (e) {}
 		return amount;
 	}
+	// FIXME: Each child in a list should have a unique "key" prop.
 	return (
 		<>
 			{riders ? (

@@ -105,6 +105,21 @@ export const riderSlice = createSlice({
 				state.isLoading = false;
 				state.isError = true;
 				state.message = action.payload;
+			})
+			.addCase(deleteRider.pending, (state) => {
+				state.isLoading = true;
+			})
+			.addCase(deleteRider.fulfilled, (state, action) => {
+				state.isLoading = false;
+				state.isSuccess = true;
+				state.riders = state.riders.filter(
+					(rider) => rider._id !== action.payload.id
+				);
+			})
+			.addCase(deleteRider.rejected, (state, action) => {
+				state.isLoading = false;
+				state.isError = true;
+				state.message = action.payload;
 			});
 	},
 });

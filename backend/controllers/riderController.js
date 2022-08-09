@@ -6,12 +6,14 @@ const Rider = require('../models/RiderModel');
 // @route   GET /api/riders
 // @access  Private
 const getRiders = asyncHandler(async (req, res) => {
-	if(req.query.withprice != null){
-		console.log('get rider with price')
-		const riders = await Rider.find().populate('price.itemset');
+	if (req.query.withprice != null) {
+		console.log('get rider with price');
+		const riders = await Rider.find().populate(
+			'price.itemset'
+		);
 		res.status(200).json(riders);
-	}else{
-		console.log('get rider default')
+	} else {
+		console.log('get rider default');
 		const riders = await Rider.find();
 		res.status(200).json(riders);
 	}
@@ -44,16 +46,31 @@ const createRider = asyncHandler(async (req, res) => {
 });
 
 // TODO: Rider's update
-// TODO: Rider's delete
+
+// @desc    Delete rider
+// @route   DELETE /api/riders/:id
+// @access  Private
+const deleteRider = asyncHandler(async (req, res) => {
+	const rider = await Rider.findById(req.params.id);
+
+	if (!rider) {
+		res.status(400);
+		throw new Error('Rider not found');
+	}
+
+	await rider.remove();
+
+	res.status(200).json({ id: req.params.id });
+});
 
 // @desc    Update Price
 // @route   POST /api/riders/price
 // @access  Private
 const updatePrice = asyncHandler(async (req, res) => {
-  if (!req.body.rider) {
-    res.status(400);
-    throw new Error("Please fill 'rider' field.")
-  }
+	if (!req.body.rider) {
+		res.status(400);
+		throw new Error("Please fill 'rider' field.");
+	}
 	if (!req.body.itemset) {
 		res.status(400);
 		throw new Error("Please fill 'itemset' field.");
@@ -64,35 +81,37 @@ const updatePrice = asyncHandler(async (req, res) => {
 	}
 
 	let rider = await Rider.findByIdAndUpdate(
-    req.body.rider,
-    {
-      $pull: {
-        price: {itemset: req.body.itemset}
-      },
-    },{
-      new: true
-    }
-  )
+		req.body.rider,
+		{
+			$pull: {
+				price: { itemset: req.body.itemset },
+			},
+		},
+		{
+			new: true,
+		}
+	);
 
 	rider = await Rider.findByIdAndUpdate(
-    req.body.rider,
-    {
-      $push: {
-        price: {
-          itemset: req.body.itemset,
-          amount: req.body.amount
-        }
-      }
-    },{
-      new: true
-    }
-  )
-  console.log(rider)
+		req.body.rider,
+		{
+			$push: {
+				price: {
+					itemset: req.body.itemset,
+					amount: req.body.amount,
+				},
+			},
+		},
+		{
+			new: true,
+		}
+	);
 	res.status(200).json(rider);
 });
 
 module.exports = {
 	getRiders,
 	createRider,
+	deleteRider,
 	updatePrice,
 };
