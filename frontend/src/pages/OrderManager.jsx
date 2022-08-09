@@ -1,21 +1,21 @@
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
 import {
-	TableContainer,
+	Paper,
 	Table,
-	TableHead,
 	TableBody,
-	TableRow,
 	TableCell,
-	Paper
+	TableContainer,
+	TableHead,
+	TableRow,
 } from '@mui/material';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import RiderToggleButton from '../components/RiderToggleButton';
+import Spinner from '../components/Spinner';
 import {
 	getItemsets,
 	reset as itemsetReset,
 } from '../features/itemsets/itemsetSlice';
-import Spinner from '../components/Spinner';
-import RiderToggleButton from '../components/RiderToggleButton';
 
 const OrderManager = () => {
 	const navigate = useNavigate();
@@ -32,9 +32,12 @@ const OrderManager = () => {
 	} = useSelector((state) => state.itemsets);
 
 	// Check if logged in
-	useEffect(() => {
-		if (!user) navigate('/login');
-	}, [user]);
+	useEffect(
+		(navigate) => {
+			if (!user) navigate('/login');
+		},
+		[user]
+	);
 
 	// Get itemsets
 	useEffect(() => {
@@ -46,14 +49,13 @@ const OrderManager = () => {
 	// Play spinner if loading
 	if (isItemsetLoading) return <Spinner />;
 
-
-    // TODO: Continue working on each rider's price
-	function addItem(itemset){
-		console.log(itemset)
+	// TODO: Continue working on each rider's price
+	function addItem(itemset) {
+		console.log(itemset);
 	}
 	return (
 		<>
-			<RiderToggleButton/>
+			<RiderToggleButton />
 			<TableContainer component={Paper}>
 				<Table stickyHeader>
 					<TableHead>
@@ -65,7 +67,10 @@ const OrderManager = () => {
 					<TableBody>
 						{itemsets ? (
 							itemsets.map((itemset) => (
-								<TableRow key={itemset._id} onClick={() => addItem(itemset)}>
+								<TableRow
+									key={itemset._id}
+									onClick={() => addItem(itemset)}
+								>
 									<TableCell>{itemset.name}</TableCell>
 									<TableCell>??</TableCell>
 								</TableRow>
@@ -78,6 +83,6 @@ const OrderManager = () => {
 			</TableContainer>
 		</>
 	);
-}
+};
 
-export default OrderManager
+export default OrderManager;

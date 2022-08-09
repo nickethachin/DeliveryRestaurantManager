@@ -1,13 +1,4 @@
-import {
-	Button,
-	Input,
-	TableCell,
-	TableRow,
-} from '@mui/material';
-
-// Icons
-import CloseIcon from '@mui/icons-material/Close';
-import SaveIcon from '@mui/icons-material/Save';
+import { Input, TableCell, TableRow } from '@mui/material';
 import { useState } from 'react';
 
 const EditableRow = ({

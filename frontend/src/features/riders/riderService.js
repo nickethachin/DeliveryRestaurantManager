@@ -10,7 +10,11 @@ const createRider = async (riderData, token) => {
 		},
 	};
 
-	const response = await axios.post(API_URL, riderData, config);
+	const response = await axios.post(
+		API_URL,
+		riderData,
+		config
+	);
 
 	return response.data;
 };
@@ -23,7 +27,26 @@ const getRiders = async (token, query = null) => {
 		},
 	};
 
-	const response = await axios.get(API_URL+`?${query}`, config);
+	const response = await axios.get(
+		API_URL + `?${query}`,
+		config
+	);
+
+	return response.data;
+};
+
+// Delete user's rider
+const deleteRider = async (riderId, token) => {
+	const config = {
+		headers: {
+			Authorization: `Bearer ${token}`,
+		},
+	};
+
+	const response = await axios.delete(
+		API_URL + riderId,
+		config
+	);
 
 	return response.data;
 };
@@ -36,13 +59,18 @@ const updatePrice = async (priceData, token) => {
 		},
 	};
 
-	const response = await axios.post(API_URL + 'price', priceData, config);
+	const response = await axios.post(
+		API_URL + 'price',
+		priceData,
+		config
+	);
 
 	return response.data;
 };
 const riderService = {
 	createRider,
 	getRiders,
+	deleteRider,
 	updatePrice,
 };
 
