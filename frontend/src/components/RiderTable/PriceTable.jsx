@@ -84,11 +84,7 @@ const PriceTable = ({
 		<>
 			{riders ? (
 				riders.map((rider, index) => (
-					<TabPanel
-						value={value}
-						index={index}
-						key={rider._id}
-					>
+					<TabPanel value={value} index={index} key={index}>
 						<Table size='small'>
 							<TableHead>
 								<TableRow>

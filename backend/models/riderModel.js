@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const { float } = require('webidl-conversions');
 
 const riderSchema = mongoose.Schema(
 	{
@@ -24,7 +23,7 @@ const riderSchema = mongoose.Schema(
 			{
 				itemset: {
 					type: mongoose.Schema.Types.ObjectId,
-					ref: 'Itemset'
+					ref: 'Itemset',
 				},
 				amount: Number,
 			},
