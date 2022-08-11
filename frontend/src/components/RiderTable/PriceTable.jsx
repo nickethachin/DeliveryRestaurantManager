@@ -51,19 +51,28 @@ const PriceTable = ({
 		event.preventDefault();
 		setEditRiderId(itemset);
 	}
-	function handleSaveClick(event, rider, itemset, amount) {
+	function handleSaveClick(
+		event,
+		selectedRider,
+		itemset,
+		amount
+	) {
 		event.preventDefault();
-		console.log(`save ${itemset.name} as ${amount}฿`);
+		// console.log(`save ${itemset.name} as ${amount}฿`);
 		riderService.updatePrice(
 			{
-				rider: rider,
+				rider: selectedRider,
 				itemset: itemset._id,
 				amount: amount,
 			},
 			user.token
 		);
 		setEditRiderId(null);
-		setEditReload(!editReload);
+		const price = selectedRider.price.find(
+			(price) => price.itemset === itemset._id
+		);
+		price.amount = amount;
+		// setEditReload(!editReload);
 	}
 	function handleCancelClick(event) {
 		event.preventDefault();
@@ -80,6 +89,7 @@ const PriceTable = ({
 		return amount;
 	}
 	// FIXME: Each child in a list should have a unique "key" prop.
+	// TODO: Add partial rerender
 	return (
 		<>
 			{riders ? (
