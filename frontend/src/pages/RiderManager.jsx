@@ -157,8 +157,6 @@ const RiderManager = () => {
 				value={tabValue}
 				riders={riders}
 				itemsets={itemsets}
-				editReload={editReload}
-				setEditReload={setEditReload}
 			/>
 		</Box>
 	);

@@ -1,5 +1,6 @@
 import {
 	Box,
+	Button,
 	Table,
 	TableBody,
 	TableCell,
@@ -37,19 +38,13 @@ TabPanel.propTypes = {
 	value: PropTypes.number.isRequired,
 };
 
-const PriceTable = ({
-	user,
-	value,
-	riders,
-	itemsets,
-	editReload,
-	setEditReload,
-}) => {
+const PriceTable = ({ user, value, riders, itemsets }) => {
 	// State and function for edit rider's price
-	const [editRiderId, setEditRiderId] = useState(null);
+	const [isEditingPrice, setIsEditingPrice] =
+		useState(false);
 	function handleEditClick(event, itemset) {
 		event.preventDefault();
-		setEditRiderId(itemset);
+		setIsEditingPrice(!isEditingPrice);
 	}
 	function handleSaveClick(
 		event,
@@ -67,7 +62,7 @@ const PriceTable = ({
 			},
 			user.token
 		);
-		setEditRiderId(null);
+		setIsEditingPrice(false);
 		const price = selectedRider.price.find(
 			(price) => price.itemset === itemset._id
 		);
@@ -76,7 +71,7 @@ const PriceTable = ({
 	}
 	function handleCancelClick(event) {
 		event.preventDefault();
-		setEditRiderId(null);
+		setIsEditingPrice(false);
 	}
 
 	function findPrice(rider, itemset) {
@@ -88,8 +83,6 @@ const PriceTable = ({
 		} catch (e) {}
 		return amount;
 	}
-	// FIXME: Each child in a list should have a unique "key" prop.
-	// TODO: Add partial rerender
 	return (
 		<>
 			{riders ? (
@@ -108,7 +101,7 @@ const PriceTable = ({
 								{itemsets ? (
 									itemsets.map((itemset) => (
 										<>
-											{editRiderId === itemset._id ? (
+											{isEditingPrice === true ? (
 												<EditableRow
 													itemset={itemset}
 													rider={rider}
@@ -131,6 +124,26 @@ const PriceTable = ({
 								)}
 							</TableBody>
 						</Table>
+						{isEditingPrice ? (
+							<>
+								<Button
+									sx={{ margin: 2 }}
+									variant='contained'
+									size='large'
+								>
+									SAVE
+								</Button>
+								<Button
+									sx={{ margin: 2 }}
+									variant='contained'
+									size='large'
+									color='warning'
+									onClick={handleCancelClick}
+								>
+									CANCEL
+								</Button>
+							</>
+						) : null}
 					</TabPanel>
 				))
 			) : (

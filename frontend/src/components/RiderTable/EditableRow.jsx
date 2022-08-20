@@ -1,13 +1,7 @@
 import { Input, TableCell, TableRow } from '@mui/material';
 import { useState } from 'react';
 
-const EditableRow = ({
-	itemset,
-	rider,
-	findPrice,
-	save,
-	cancel,
-}) => {
+const EditableRow = ({ itemset, rider, findPrice }) => {
 	const [editData, setEditData] = useState(null);
 	function handleInput(event) {
 		event.preventDefault();
@@ -20,19 +14,13 @@ const EditableRow = ({
 			<TableCell>{itemset.name}</TableCell>
 			<TableCell align='center'>
 				<Input
-					autoFocus
+					sx={{ width: 50 }}
 					type='number'
 					name='amount'
 					required={true}
 					defaultValue={findPrice(rider, itemset._id)}
 					onFocus={handleInput}
 					onChange={handleInput}
-					onBlur={(e) => save(e, rider, itemset, editData)}
-					onKeyDown={(e) =>
-						e.key === 'Enter'
-							? save(e, rider, itemset, editData)
-							: null
-					}
 				></Input>
 			</TableCell>
 		</TableRow>
