@@ -2,7 +2,6 @@ import {
 	createAsyncThunk,
 	createSlice,
 } from '@reduxjs/toolkit';
-import riderSlice from '../riders/riderSlice';
 import materialService from './materialService';
 
 const initialState = {
