@@ -137,7 +137,7 @@ const PriceTable = ({ user, value, riders, itemsets }) => {
 									sx={{ margin: 2 }}
 									variant='contained'
 									size='large'
-									color='warning'
+									color='error'
 									onClick={handleCancelClick}
 								>
 									CANCEL

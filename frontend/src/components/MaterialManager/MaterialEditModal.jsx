@@ -122,7 +122,7 @@ const MaterialEditModal = ({ isOpen }) => {
 						</Button>
 						<Button
 							variant='outlined'
-							color='warning'
+							color='error'
 							onClick={handleClose}
 						>
 							Close

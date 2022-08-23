@@ -1,11 +1,18 @@
-const express = require('express')
-const router = express.Router()
-const { getItems, createItem } = require('../controllers/itemController')
+const express = require('express');
+const router = express.Router();
+const {
+	getItems,
+	createItem,
+	updateItem,
+	deleteItem,
+} = require('../controllers/itemController');
 
-const { protect } = require('../middleware/authMiddleware')
+const { protect } = require('../middleware/authMiddleware');
 
-router.route('/').get(protect, getItems).post(protect, createItem)
-// TODO: Item's update&delete routes
-// router.route('/:id').put(protect, updateItem).delete(protect, deleteItem)
+router.route('/').get(protect, getItems);
+router.route('/').post(protect, createItem);
+// TODO: Item's update routes
+router.route('/:id').put(protect, updateItem);
+router.route('/:id').delete(protect, deleteItem);
 
-module.exports = router
+module.exports = router;

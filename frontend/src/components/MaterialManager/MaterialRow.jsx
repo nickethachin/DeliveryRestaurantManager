@@ -36,7 +36,7 @@ const MaterialItem = ({ material }) => {
 					<Button
 						variant='outlined'
 						size='small'
-						color='warning'
+						color='error'
 						onClick={() => handleDelete(_id)}
 					>
 						Delete

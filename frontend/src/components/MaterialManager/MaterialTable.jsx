@@ -4,10 +4,10 @@ import {
 	TableCell,
 	TableContainer,
 	TableHead,
-	TableRow
+	TableRow,
 } from '@mui/material';
 import { useSelector } from 'react-redux';
-import MaterialItem from './MaterialItem';
+import MaterialItem from './MaterialRow';
 
 const MaterialTable = () => {
 	const { materials } = useSelector(
