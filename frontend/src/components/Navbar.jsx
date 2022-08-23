@@ -9,7 +9,7 @@ import {
 	Typography,
 } from '@mui/material';
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { logout, reset } from '../features/auth/authSlice';
 
@@ -39,6 +39,27 @@ const Navbar = () => {
 		navigate('/');
 	};
 
+	const { user } = useSelector((state) => state.auth);
+	const ProfileMenu = () => {
+		return (
+			<>
+				<Avatar
+					id='profile-button'
+					sx={{ width: 30, height: 30 }}
+					onClick={handleClick}
+					src='https://www.gbtps.org/wp-content/uploads/2015/08/blank-avatar.png'
+				/>
+				<Menu
+					id='profile-menu'
+					anchorEl={anchorEl}
+					open={open}
+					onClose={handleClose}
+				>
+					<MenuItem onClick={onLogout}>Logout</MenuItem>
+				</Menu>
+			</>
+		);
+	};
 	return (
 		<AppBar position='sticky'>
 			<StyledToolbar>
@@ -54,20 +75,24 @@ const Navbar = () => {
 						sx={{ display: { xs: 'block', sm: 'none' } }}
 					/>
 				</Link>
-				<Avatar
-					id='profile-button'
-					sx={{ width: 30, height: 30 }}
-					onClick={handleClick}
-					src='https://www.gbtps.org/wp-content/uploads/2015/08/blank-avatar.png'
-				/>
-				<Menu
-					id='profile-menu'
-					anchorEl={anchorEl}
-					open={open}
-					onClose={handleClose}
-				>
-					<MenuItem onClick={onLogout}>Logout</MenuItem>
-				</Menu>
+				{user ? (
+					<>
+						<Avatar
+							id='profile-button'
+							sx={{ width: 30, height: 30 }}
+							onClick={handleClick}
+							src='https://www.gbtps.org/wp-content/uploads/2015/08/blank-avatar.png'
+						/>
+						<Menu
+							id='profile-menu'
+							anchorEl={anchorEl}
+							open={open}
+							onClose={handleClose}
+						>
+							<MenuItem onClick={onLogout}>Logout</MenuItem>
+						</Menu>
+					</>
+				) : null}
 			</StyledToolbar>
 		</AppBar>
 	);

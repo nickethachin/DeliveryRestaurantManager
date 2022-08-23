@@ -19,6 +19,9 @@ import {
 	Switch,
 } from '@mui/material';
 import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { logout, reset } from '../features/auth/authSlice';
 
 const SideItem = ({ name, path, icon, sx }) => {
 	return (
@@ -32,6 +35,9 @@ const SideItem = ({ name, path, icon, sx }) => {
 };
 
 const Sidebar = ({ setTheme }) => {
+	const dispatch = useDispatch();
+	const navigate = useNavigate();
+
 	const [openFoods, setOpenFoods] = useState(true);
 	const handleClickFoods = () => {
 		setOpenFoods(!openFoods);
@@ -46,6 +52,16 @@ const Sidebar = ({ setTheme }) => {
 			setTheme('light');
 		}
 	};
+
+	const handleClickLogout = () => {
+		dispatch(logout());
+		dispatch(reset());
+		navigate('/login');
+	};
+	const { user } = useSelector((state) => state.auth);
+	if (!user) {
+		return;
+	}
 
 	return (
 		<Box sx={{ display: { xs: 'none', sm: 'block' } }}>
@@ -97,11 +113,14 @@ const Sidebar = ({ setTheme }) => {
 					path='/rider-manager'
 					icon={<DeliveryDiningIcon />}
 				/>
-				<SideItem
-					name='Logout'
-					path='/logout'
-					icon={<LogoutIcon />}
-				/>
+				<ListItem disablePadding>
+					<ListItemButton onClick={handleClickLogout}>
+						<ListItemIcon>
+							<LogoutIcon />
+						</ListItemIcon>
+						<ListItemText primary='Logout' />
+					</ListItemButton>
+				</ListItem>
 				<Divider />
 				<ListItem disablePadding>
 					<ListItemButton>

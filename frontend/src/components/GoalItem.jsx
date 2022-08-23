@@ -6,10 +6,10 @@ function GoalItem({ goal }) {
 
 	return (
 		<div className='goal'>
-			<div>DD/MM/YYYY HH:MM:SS</div>
-			{/* <div>
+			{/* <div>DD/MM/YYYY HH:MM:SS</div> */}
+			<div>
 				{new Date(goal.createdAt).toLocaleString('th-TH')}
-			</div> */}
+			</div>
 			<h2>{goal.text}</h2>
 			<button
 				onClick={() => dispatch(deleteGoal(goal._id))}

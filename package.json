@@ -21,6 +21,9 @@
 	},
 	"homepage": "https://github.com/nickethachin/DeliveryRestaurantManager#readme",
 	"dependencies": {
+		"@devexpress/dx-react-chart": "^3.0.5",
+		"@devexpress/dx-react-chart-material-ui": "^3.0.5",
+		"@devexpress/dx-react-core": "^3.0.5",
 		"bcryptjs": "^2.4.3",
 		"body-parser": "^1.20.0",
 		"colors": "^1.4.0",

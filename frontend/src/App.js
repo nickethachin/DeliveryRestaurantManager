@@ -6,6 +6,7 @@ import {
 	createTheme,
 	CssBaseline,
 	Stack,
+	Switch,
 	ThemeProvider,
 } from '@mui/material';
 import { useState } from 'react';
@@ -14,6 +15,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
+import Login from './pages/Login';
 import routes from './routes';
 
 function App() {
