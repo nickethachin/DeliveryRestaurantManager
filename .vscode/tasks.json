@@ -1,0 +1,35 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Run server when startup",
+            "type": "shell",
+            "command": "npm run server",
+            "presentation": {
+                "reveal": "silent",
+                "focus": false,
+                "panel": "new",
+                "showReuseMessage": true,
+            },
+            "runOptions": {
+                "runOn": "folderOpen"
+            }
+        },
+        {
+            "label": "Run client when startup",
+            "type": "shell",
+            "command": "npm run client",
+            "presentation": {
+                "reveal": "silent",
+                "focus": false,
+                "panel": "new",
+                "showReuseMessage": true,
+            },
+            "runOptions": {
+                "runOn": "folderOpen"
+            }
+        },
+    ]
+}

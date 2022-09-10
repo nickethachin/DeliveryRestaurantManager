@@ -1,62 +1,68 @@
-import { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useSelector, useDispatch } from 'react-redux'
-import GoalForm from '../components/GoalForm'
-import GoalItem from '../components/GoalItem'
-import Spinner from '../components/Spinner'
-import { getGoals, reset } from '../features/goals/goalSlice'
+import {
+	Box,
+	Card,
+	CardContent,
+	Divider,
+	Grid,
+	Stack,
+	Typography,
+} from '@mui/material';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+const BalanceCard = ({ rider, amount }) => {
+	return (
+		<Card variant='outlined'>
+			<CardContent>
+				<Typography color='text.secondary' gutterBottom>
+					BALANCE
+				</Typography>
+				<Stack
+					direction='row'
+					justifyContent='space-between'
+				>
+					<Typography variant='h5'>{rider}</Typography>
+					<Typography variant='h5'>
+						{Number(amount).toFixed(0).toLocaleString()} ฿
+					</Typography>
+				</Stack>
+			</CardContent>
+		</Card>
+	);
+};
 
-function Dashboard() {
-  const navigate = useNavigate()
-  const dispatch = useDispatch()
+const Dashboard = () => {
+	const navigate = useNavigate();
+	const dispatch = useDispatch();
+	const { user } = useSelector((state) => state.auth);
+	useEffect(() => {
+		if (!user) {
+			navigate('/login');
+		}
+	});
 
-  const { user } = useSelector((state) => state.auth)
-  const { goals, isLoading, isError, message } = useSelector(
-    (state) => state.goals
-  )
+	return (
+		<Box sx={{ flexGrow: 1 }}>
+			<Divider>
+				<Typography variant='h4'>Dashboard</Typography>
+			</Divider>
+			<br />
+			<Grid container spacing={2}>
+				<Grid item xs={3}>
+					<BalanceCard rider='Grab' amount='295' />
+				</Grid>
+				<Grid item xs={3}>
+					<BalanceCard rider='Lineman' amount='457.65' />
+				</Grid>
+				<Grid item xs={3}>
+					<BalanceCard rider='Shopee' amount='135' />
+				</Grid>
+				<Grid item xs={3}>
+					<BalanceCard rider='Foodpanda' amount='279.45' />
+				</Grid>
+			</Grid>
+		</Box>
+	);
+};
 
-  useEffect(() => {
-    if (isError) {
-      console.log(message)
-    }
-
-    if (!user) {
-      navigate('/login')
-    }
-
-    dispatch(getGoals())
-
-    return () => {
-      dispatch(reset())
-    }
-  }, [user, navigate, isError, message, dispatch])
-
-  if (isLoading) {
-    return <Spinner />
-  }
-
-  return (
-    <>
-      <section className='heading'>
-        <h1>Welcome {user && user.name}</h1>
-        <p>Goals Dashboard</p>
-      </section>
-
-      <GoalForm />
-
-      <section className='content'>
-        {goals.length > 0 ? (
-          <div className='goals'>
-            {goals.map((goal) => (
-              <GoalItem key={goal._id} goal={goal} />
-            ))}
-          </div>
-        ) : (
-          <h3>No goals in life</h3>
-        )}
-      </section>
-    </>
-  )
-}
-
-export default Dashboard
+export default Dashboard;
