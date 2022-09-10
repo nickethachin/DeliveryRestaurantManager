@@ -2,10 +2,9 @@ import {
 	IconButton,
 	Stack,
 	TextField,
-	Typography,
 } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import {
 	addMaterial,
 	editName,
@@ -19,13 +18,10 @@ import MaterialItem from './MaterialItem';
 import CancelIcon from '@mui/icons-material/Cancel';
 import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
 import SaveIcon from '@mui/icons-material/Save';
-import GoBackButton from '../GoBackButton';
 
-const ItemForm = ({ id }) => {
+const ItemForm = ({ id, handleSave }) => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
-
-	const items = useSelector((state) => state.items);
 
 	// Get materials from store to use as dropdown option
 	const { materials } = useSelector(
@@ -35,12 +31,12 @@ const ItemForm = ({ id }) => {
 		return { value: material._id, label: material.name };
 	});
 
-	const { name, materials: materialsList } = useSelector(
-		(state) =>
-			state.items.items.find(
-				(material) => material._id == id
-			)
-	);
+	const { name = 'test', materials: materialsList } =
+		useSelector((state) => {
+			return state.items.items.find(
+				(item) => item._id == id
+			);
+		});
 
 	const handleNameInput = (event) => {
 		dispatch(
@@ -59,34 +55,12 @@ const ItemForm = ({ id }) => {
 		dispatch(removeMaterial({ _id: id, index }));
 	};
 
-	const handleSaveItem = () => {
-		dispatch(
-			updateItem({
-				_id: id,
-				name,
-				materials: materialsList,
-			})
-		);
-		navigate('/item-manager');
-	};
-
 	const handleResetItem = () => {
 		dispatch(getItems());
 	};
 
 	return (
 		<>
-			<Stack
-				direction='row'
-				justifyContent='space-between'
-				sx={{ mb: 2 }}
-			>
-				<Typography variant='h6'>Editing - {id}</Typography>
-				<GoBackButton
-					location='item-manager'
-					action={getItems}
-				/>
-			</Stack>
 			<Stack spacing={2}>
 				<TextField
 					name='name'
@@ -99,6 +73,7 @@ const ItemForm = ({ id }) => {
 					materialsList.map((material, index) => {
 						return (
 							<MaterialItem
+								id={id}
 								material={material}
 								index={index}
 								remove={handleRemoveMaterial}
@@ -120,7 +95,9 @@ const ItemForm = ({ id }) => {
 					<Stack direction='row' spacing={1}>
 						<IconButton
 							color='success'
-							onClick={handleSaveItem}
+							onClick={() => {
+								handleSave(id, name, materialsList);
+							}}
 						>
 							<SaveIcon />
 						</IconButton>

@@ -11,19 +11,6 @@ const initialState = {
 	isLoading: false,
 	isEditing: false,
 	message: '',
-	editingData: {
-		isEditing: false,
-		_id: '',
-		name: '',
-		materials: [
-			{
-				matId: '',
-				amount: 0,
-				usage: 0,
-				output: 0,
-			},
-		],
-	},
 };
 
 const getError = (error) => {
@@ -89,16 +76,6 @@ export const itemSlice = createSlice({
 	initialState,
 	reducers: {
 		reset: (state) => initialState,
-		openEditor: (state, { payload }) => {
-			const { _id, name, materials } = payload;
-			state.editingData._id = _id;
-			state.editingData.name = name;
-			state.editingData.materials = materials;
-			state.editingData.isEditing = true;
-		},
-		closeEditor: (state) => {
-			state.editingData.isEditing = false;
-		},
 		editName: (state, { payload }) => {
 			const index = state.items.findIndex(
 				(item) => item._id == payload._id
@@ -134,7 +111,7 @@ export const itemSlice = createSlice({
 		addBlank: (state) => {
 			state.items.push({
 				_id: 'blank',
-				name: null,
+				name: '',
 				materials: [],
 			});
 		},

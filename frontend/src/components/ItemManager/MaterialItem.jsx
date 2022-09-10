@@ -10,20 +10,15 @@ import {
 	TextField,
 	Typography,
 } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import CalculateIcon from '@mui/icons-material/Calculate';
 import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
 import { editMaterial } from '../../features/items/itemSlice';
 import MaterialCalculator from './MaterialCalculator';
 
-const MaterialItem = ({ index, remove, options }) => {
+const MaterialItem = ({ id, index, remove, options }) => {
 	const dispatch = useDispatch();
-	const { id } = useParams();
-	const { materials } = useSelector(
-		(state) => state.materials
-	);
 
 	const { matId, amount } = useSelector(
 		(state) =>
