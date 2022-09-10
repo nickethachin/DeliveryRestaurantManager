@@ -4,220 +4,137 @@ import {
 	TextField,
 	Typography,
 } from '@mui/material';
-import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Select from 'react-select';
+import { useNavigate, useParams } from 'react-router-dom';
+import {
+	addMaterial,
+	editName,
+	getItems,
+	removeMaterial,
+	updateItem,
+} from '../../features/items/itemSlice';
+import Spinner from '../Spinner';
+import MaterialItem from './MaterialItem';
 
 import CancelIcon from '@mui/icons-material/Cancel';
-import DeleteIcon from '@mui/icons-material/Delete';
 import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
 import SaveIcon from '@mui/icons-material/Save';
-import { useParams } from 'react-router-dom';
-import {
-	addData,
-	reset,
-} from '../../features/formdatas/formDataSlice';
-import { updateItem } from '../../features/items/itemSlice';
-import Spinner from '../Spinner';
+import GoBackButton from '../GoBackButton';
 
 const ItemEdit = () => {
+	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const { id } = useParams();
+
+	const items = useSelector((state) => state.items);
 
 	// Get materials from store to use as dropdown option
 	const { materials } = useSelector(
 		(state) => state.materials
 	);
-
 	const options = materials.map((material) => {
 		return { value: material._id, label: material.name };
 	});
 
-	const { items } = useSelector((state) => state.items);
-	const currentItem = items.find((item) => item._id === id);
-	useEffect(() => {
-		if (currentItem !== undefined) {
-			dispatch(
-				addData({
-					name: currentItem.name,
-					materials: currentItem.materials,
-				})
-			);
-		}
-	}, [currentItem]);
 	const { name, materials: materialsList } = useSelector(
-		(state) => state.formData.data
+		(state) =>
+			state.items.items.find(
+				(material) => material._id == id
+			)
 	);
 
 	const handleNameInput = (event) => {
 		dispatch(
-			addData({
+			editName({
+				_id: id,
 				name: event.target.value,
-				materials: materialsList,
 			})
 		);
-	};
-
-	const handleMaterialChange = (event, index) => {
-		const unit = materials.find(
-			(material) => material._id === event.value
-		).unit;
-		const select = options.find(
-			(opt) => opt.value === event.value
-		);
-		const newList = materialsList.map((mat, matIndex) => {
-			if (matIndex === index) {
-				return {
-					...mat,
-					matId: event.value,
-					unit,
-					select,
-				};
-			}
-			return mat;
-		});
-		dispatch(addData({ name, materials: newList }));
-	};
-
-	const handleMaterialInput = (event, index) => {
-		const newList = materialsList.map((mat, matIndex) => {
-			if (matIndex === index) {
-				return {
-					...mat,
-					[event.target.name]: event.target.value,
-				};
-			}
-			return mat;
-		});
-		dispatch(addData({ name, materials: newList }));
 	};
 
 	const handleAddMaterial = () => {
-		const newList = [...materialsList];
-		newList.push({ usage: 0, output: 0 });
-		dispatch(addData({ name, materials: newList }));
+		dispatch(addMaterial({ _id: id }));
 	};
 
 	const handleRemoveMaterial = (index) => {
-		const newList = [...materialsList];
-		newList.splice(index, 1);
-		dispatch(addData({ name, materials: newList }));
+		dispatch(removeMaterial({ _id: id, index }));
 	};
 
-	const clearForm = () => {
-		dispatch(reset());
+	const handleSaveItem = () => {
 		dispatch(
-			addData({
-				name: currentItem.name,
-				materials: currentItem.materials,
+			updateItem({
+				_id: id,
+				name,
+				materials: materialsList,
 			})
 		);
+		navigate('/item-manager');
 	};
 
-	const handleUpdateItem = () => {
-		const item = {
-			name: name,
-			materials: materialsList.map((mat) => {
-				return {
-					matId: mat.matId,
-					amount: mat.amount,
-				};
-			}),
-		};
-		dispatch(updateItem(item));
-		clearForm();
+	const handleResetItem = () => {
+		dispatch(getItems());
 	};
 
 	return (
-		<Stack spacing={2}>
-			<TextField
-				name='name'
-				label='Name'
-				variant='outlined'
-				size='small'
-				value={name}
-				onChange={handleNameInput}
-			/>
-			{materialsList !== undefined ? (
-				materialsList.map((material, index) => (
-					<Stack
-						key={index}
-						direction='row'
-						spacing={1}
-						alignItems='center'
-						justifyContent='space-between'
-					>
-						<Typography variant='body1'>
-							{index + 1}.) ใช้
-						</Typography>
-						<div style={{ width: '300px' }}>
-							<Select
-								name='matId'
+		<>
+			<Stack
+				direction='row'
+				justifyContent='space-between'
+				sx={{ mb: 2 }}
+			>
+				<Typography variant='h6'>Editing - {id}</Typography>
+				<GoBackButton
+					location='item-manager'
+					action={getItems}
+				/>
+			</Stack>
+			<Stack spacing={2}>
+				<TextField
+					name='name'
+					variant='outlined'
+					size='small'
+					value={name}
+					onChange={handleNameInput}
+				/>
+				{materialsList !== undefined ? (
+					materialsList.map((material, index) => {
+						return (
+							<MaterialItem
+								material={material}
+								index={index}
+								remove={handleRemoveMaterial}
 								options={options}
-								value={material.select}
-								isSearchable={true}
-								onChange={(event) => {
-									handleMaterialChange(event, index);
-								}}
+								key={index}
 							/>
-						</div>
-						<Typography variant='body1'>จำนวน</Typography>
-						<TextField
-							name='usage'
-							type='number'
-							variant='outlined'
-							size='small'
-							value={material.usage}
-							sx={{ maxWidth: 75 }}
-							onChange={(event) =>
-								handleMaterialInput(event, index)
-							}
-						/>
-						<Typography variant='body1'>
-							{materialsList[index]['unit']} เพื่อผลิต
-						</Typography>
-						<TextField
-							name='output'
-							type='number'
-							variant='outlined'
-							size='small'
-							value={material.output}
-							sx={{ maxWidth: 75 }}
-							onChange={(event) =>
-								handleMaterialInput(event, index)
-							}
-						/>
-						<Typography variant='body1'>ชิ้น</Typography>
+						);
+					})
+				) : (
+					<Spinner />
+				)}
+				<Stack
+					direction='row'
+					justifyContent='space-between'
+				>
+					<IconButton onClick={handleAddMaterial}>
+						<LibraryAddIcon />
+					</IconButton>
+					<Stack direction='row' spacing={1}>
 						<IconButton
-							size='small'
-							color='error'
-							disabled={index > 0 ? false : true}
-							onClick={() => handleRemoveMaterial(index)}
+							color='success'
+							onClick={handleSaveItem}
 						>
-							<DeleteIcon />
+							<SaveIcon />
+						</IconButton>
+						<IconButton
+							onClick={handleResetItem}
+							color='error'
+						>
+							<CancelIcon />
 						</IconButton>
 					</Stack>
-				))
-			) : (
-				<Spinner />
-			)}
-			<Stack direction='row' justifyContent='space-between'>
-				<IconButton onClick={handleAddMaterial}>
-					<LibraryAddIcon />
-				</IconButton>
-				<Stack direction='row' spacing={1}>
-					<IconButton
-						color='success'
-						onClick={handleUpdateItem}
-					>
-						<SaveIcon />
-					</IconButton>
-					<IconButton color='error' onClick={clearForm}>
-						<CancelIcon />
-					</IconButton>
 				</Stack>
 			</Stack>
-		</Stack>
+		</>
 	);
 };
 

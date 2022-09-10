@@ -1,24 +1,45 @@
+import Autocomplete from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
 import { useState } from 'react';
-import Select from 'react-select';
 
 const options = [
-	{ value: 'chocolate', label: 'Chocolate' },
-	{ value: 'strawberry', label: 'Strawberry' },
-	{ value: 'vanilla', label: 'Vanilla' },
+	{ value: 1, label: 'Option 1' },
+	{ value: 2, label: 'Option 2' },
 ];
 
 const Playground = () => {
-	const [selectedOption, setSelectedOption] =
-		useState('vanilla');
-	const selectVal = options.find(
-		(opt) => opt.value === selectedOption
+	const [value, setValue] = useState(
+		options.find((option) => option.value === 2)
 	);
+	const [inputValue, setInputValue] = useState('');
+
 	return (
-		<Select
-			defaultValue={selectVal}
-			onChange={setSelectedOption}
-			options={options}
-		/>
+		<div>
+			<div>{`value: ${
+				value !== null ? `'${value.label}'` : 'null'
+			}`}</div>
+			<div>{`inputValue: '${inputValue}'`}</div>
+			<br />
+			<Autocomplete
+				value={value}
+				onChange={(event, newValue) => {
+					setValue(newValue);
+				}}
+				inputValue={inputValue}
+				onInputChange={(event, newInputValue) => {
+					setInputValue(newInputValue);
+				}}
+				id='controllable-states-demo'
+				options={options}
+				sx={{ width: 300 }}
+				isOptionEqualToValue={(option, value) =>
+					option.value === value.value
+				}
+				renderInput={(params) => (
+					<TextField {...params} label='Controllable' />
+				)}
+			/>
+		</div>
 	);
 };
 

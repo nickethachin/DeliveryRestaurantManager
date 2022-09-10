@@ -13,25 +13,7 @@ const itemSchema = mongoose.Schema(
 					ref: 'Material',
 					required: [true, 'Please specify material id'],
 				},
-				usage: {
-					type: Number,
-					default: 0,
-				},
-				output: {
-					type: Number,
-					default: 0,
-				},
-				amount: {
-					type: Number,
-					default: () => {
-						const calAmount = this.usage / this.output;
-						if (isFinite(calAmount)) {
-							return calAmount;
-						} else {
-							return 0;
-						}
-					},
-				},
+				amount: Number,
 			},
 		],
 	},
@@ -39,15 +21,5 @@ const itemSchema = mongoose.Schema(
 		timestamps: true,
 	}
 );
-
-itemSchema.pre('findOneAndUpdate', function (next) {
-	this.materials.forEach((material) => {
-		const calAmount = material.usage / material.output;
-		if (isFinite(calAmount)) {
-			material.amount = calAmount;
-		}
-	});
-	next();
-});
 
 module.exports = mongoose.model('Item', itemSchema);

@@ -1,9 +1,6 @@
-import { iconClasses } from '@mui/material';
 import { createSlice } from '@reduxjs/toolkit';
 
-const initialState = {
-	data: [],
-};
+const initialState = { data: '' };
 
 export const formDataSlice = createSlice({
 	name: 'formData',
@@ -11,7 +8,7 @@ export const formDataSlice = createSlice({
 	reducers: {
 		reset: (state) => initialState,
 		addData: (state, { payload }) => {
-			state.data = payload;
+			state.data = { ...state.data, ...payload };
 		},
 	},
 });

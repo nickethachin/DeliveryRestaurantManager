@@ -64,7 +64,6 @@ export const updateItem = createAsyncThunk(
 	'items/update',
 	async (itemData, thunkAPI) => {
 		try {
-			console.log(itemData);
 			const token = thunkAPI.getState().auth.user.token;
 			return await itemService.updateItem(itemData, token);
 		} catch (error) {
@@ -99,6 +98,45 @@ export const itemSlice = createSlice({
 		},
 		closeEditor: (state) => {
 			state.editingData.isEditing = false;
+		},
+		editName: (state, { payload }) => {
+			const index = state.items.findIndex(
+				(item) => item._id == payload._id
+			);
+			state.items[index].name = payload.name;
+		},
+		editMaterial: (state, { payload }) => {
+			const itemIndex = state.items.findIndex(
+				(item) => item._id == payload._id
+			);
+			state.items[itemIndex].materials[
+				payload.materialIndex
+			] = payload.material;
+		},
+		addMaterial: (state, { payload }) => {
+			const itemIndex = state.items.findIndex(
+				(item) => item._id == payload._id
+			);
+			state.items[itemIndex].materials.push({
+				matId: null,
+				amount: 0,
+			});
+		},
+		removeMaterial: (state, { payload }) => {
+			const itemIndex = state.items.findIndex(
+				(item) => item._id == payload._id
+			);
+			state.items[itemIndex].materials.splice(
+				payload.index,
+				1
+			);
+		},
+		addBlank: (state) => {
+			state.items.push({
+				_id: 'blank',
+				name: null,
+				materials: [],
+			});
 		},
 	},
 	extraReducers: (builder) => {
@@ -176,6 +214,14 @@ export const itemSlice = createSlice({
 	},
 });
 
-export const { reset, openEditor, closeEditor } =
-	itemSlice.actions;
+export const {
+	reset,
+	openEditor,
+	closeEditor,
+	editName,
+	editMaterial,
+	addMaterial,
+	removeMaterial,
+	addBlank,
+} = itemSlice.actions;
 export default itemSlice.reducer;

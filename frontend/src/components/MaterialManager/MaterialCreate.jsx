@@ -37,7 +37,6 @@ const MaterialCreate = () => {
 
 	return (
 		<>
-			<h1>MaterialManager</h1>
 			<Stack
 				direction='row'
 				justifyContent='center'

@@ -1,3 +1,8 @@
+import {
+	Divider,
+	LinearProgress,
+	Typography,
+} from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -23,16 +28,24 @@ const MaterialManager = () => {
 		useSelector((state) => state.materials);
 
 	useEffect(() => {
+		if (!user) {
+			navigate('/login');
+		}
 		dispatch(getMaterials());
 		return () => dispatch(reset());
 	}, [user, navigate, isError, message, dispatch]);
 
 	return (
 		<>
+			<Typography variant='h5'>Material Manager</Typography>
 			<MaterialCreate />
+			{isLoading ? (
+				<LinearProgress sx={{ my: 2 }} />
+			) : (
+				<Divider sx={{ my: 2 }} />
+			)}
 			<MaterialTable />
 			<MaterialEditModal isOpen={editingData.isEditing} />
-			{isLoading ? <Spinner /> : null}
 		</>
 	);
 };

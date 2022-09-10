@@ -24,7 +24,6 @@ const createItem = async (itemData, token) => {
 };
 
 const updateItem = async (itemData, token) => {
-	console.log(API_URL + itemData._id);
 	const response = await axios.put(
 		API_URL + itemData._id,
 		itemData,

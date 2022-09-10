@@ -5,6 +5,7 @@ const materialSchema = mongoose.Schema(
 		name: {
 			type: String,
 			required: [true, 'Please add a name'],
+			unique: true,
 		},
 		type: {
 			type: String,
