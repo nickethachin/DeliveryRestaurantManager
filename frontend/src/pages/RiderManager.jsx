@@ -40,9 +40,6 @@ const RiderManager = () => {
 		[user]
 	);
 
-	// State for force rerender when save price
-	const [editReload, setEditReload] = useState();
-
 	// State for create new rider
 	const [isCreating, setIsCreating] = useState(false);
 	function toggleCreating() {
@@ -72,13 +69,7 @@ const RiderManager = () => {
 		if (isRiderError) console.log(riderMessage);
 		dispatch(getRiders());
 		return () => dispatch(riderReset());
-	}, [
-		editReload,
-		navigate,
-		isRiderError,
-		riderMessage,
-		dispatch,
-	]);
+	}, [navigate, isRiderError, riderMessage, dispatch]);
 
 	// Get itemsets
 	const {

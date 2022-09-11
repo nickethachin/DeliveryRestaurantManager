@@ -1,10 +1,12 @@
-import { Button, TableCell, TableRow } from '@mui/material';
+import { TableCell, TableRow } from '@mui/material';
 import { useDispatch } from 'react-redux';
 import {
 	deleteMaterial,
 	openEditor,
-	updateMaterial,
 } from '../../features/materials/materialSlice';
+
+import DeleteButton from '../DeleteButton';
+import EditButton from '../EditButton';
 
 const MaterialItem = ({ material }) => {
 	const dispatch = useDispatch();
@@ -26,21 +28,10 @@ const MaterialItem = ({ material }) => {
 				<TableCell>{type}</TableCell>
 				<TableCell>{unit}</TableCell>
 				<TableCell sx={{ maxWidth: 10 }}>
-					<Button
-						variant='outlined'
-						size='small'
-						onClick={() => handleUpdate(material)}
-					>
-						Edit
-					</Button>
-					<Button
-						variant='outlined'
-						size='small'
-						color='error'
-						onClick={() => handleDelete(_id)}
-					>
-						Delete
-					</Button>
+					<EditButton
+						action={() => handleUpdate(material)}
+					/>
+					<DeleteButton action={() => handleDelete(_id)} />
 				</TableCell>
 			</TableRow>
 		</>

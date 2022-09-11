@@ -8,7 +8,7 @@ import {
 	Typography,
 } from '@mui/material';
 import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 const BalanceCard = ({ rider, amount }) => {
 	return (
@@ -33,7 +33,6 @@ const BalanceCard = ({ rider, amount }) => {
 
 const Dashboard = () => {
 	const navigate = useNavigate();
-	const dispatch = useDispatch();
 	const { user } = useSelector((state) => state.auth);
 	useEffect(() => {
 		if (!user) {

@@ -40,26 +40,26 @@ const Navbar = () => {
 	};
 
 	const { user } = useSelector((state) => state.auth);
-	const ProfileMenu = () => {
-		return (
-			<>
-				<Avatar
-					id='profile-button'
-					sx={{ width: 30, height: 30 }}
-					onClick={handleClick}
-					src='https://www.gbtps.org/wp-content/uploads/2015/08/blank-avatar.png'
-				/>
-				<Menu
-					id='profile-menu'
-					anchorEl={anchorEl}
-					open={open}
-					onClose={handleClose}
-				>
-					<MenuItem onClick={onLogout}>Logout</MenuItem>
-				</Menu>
-			</>
-		);
-	};
+	// const ProfileMenu = () => {
+	// 	return (
+	// 		<>
+	// 			<Avatar
+	// 				id='profile-button'
+	// 				sx={{ width: 30, height: 30 }}
+	// 				onClick={handleClick}
+	// 				src='https://www.gbtps.org/wp-content/uploads/2015/08/blank-avatar.png'
+	// 			/>
+	// 			<Menu
+	// 				id='profile-menu'
+	// 				anchorEl={anchorEl}
+	// 				open={open}
+	// 				onClose={handleClose}
+	// 			>
+	// 				<MenuItem onClick={onLogout}>Logout</MenuItem>
+	// 			</Menu>
+	// 		</>
+	// 	);
+	// };
 	return (
 		<AppBar position='sticky'>
 			<StyledToolbar>
