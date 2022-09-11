@@ -22,13 +22,13 @@ const MaterialItem = ({ id, index, remove, options }) => {
 
 	const { matId, amount } = useSelector(
 		(state) =>
-			state.items.items.find((item) => item._id == id)
+			state.items.items.find((item) => item._id === id)
 				.materials[index]
 	);
 	const { unit: matUnit } = useSelector((state) => {
 		if (matId != null) {
 			return state.materials.materials.find(
-				(material) => material._id == matId
+				(material) => material._id === matId
 			);
 		} else return { unit: null };
 	});
@@ -144,6 +144,7 @@ const MaterialItem = ({ id, index, remove, options }) => {
 				<MaterialCalculator
 					setAmount={setAmount}
 					close={closeCalculator}
+					unit={matUnit}
 				/>
 			</Popover>
 
