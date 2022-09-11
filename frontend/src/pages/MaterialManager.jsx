@@ -3,13 +3,13 @@ import {
 	LinearProgress,
 	Typography,
 } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import MaterialCreate from '../components/MaterialManager/MaterialCreate';
 import MaterialEditModal from '../components/MaterialManager/MaterialEditModal';
 import MaterialTable from '../components/MaterialManager/MaterialTable';
-import Spinner from '../components/Spinner';
 import {
 	getMaterials,
 	reset,
@@ -30,6 +30,9 @@ const MaterialManager = () => {
 	useEffect(() => {
 		if (!user) {
 			navigate('/login');
+		}
+		if (isError) {
+			toast.error(message);
 		}
 		dispatch(getMaterials());
 		return () => dispatch(reset());

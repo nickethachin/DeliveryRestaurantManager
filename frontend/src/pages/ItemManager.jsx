@@ -10,6 +10,7 @@ import {
 	Routes,
 	useNavigate,
 } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import ItemCreate from '../components/ItemManager/ItemCreate';
 import ItemEdit from '../components/ItemManager/ItemEdit';
 import ItemTable from '../components/ItemManager/ItemTable';
@@ -19,15 +20,19 @@ const ItemManager = () => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 
+	const { isLoading, isError, message } = useSelector(
+		(state) => state.items
+	);
+
 	const { user } = useSelector((state) => state.auth);
 	useEffect(() => {
 		if (!user) {
 			navigate('/login');
 		}
-	}, [user]);
-	const { isLoading, isError, message } = useSelector(
-		(state) => state.items
-	);
+		if (isError) {
+			toast.error(message);
+		}
+	}, [user, isError, message]);
 
 	useEffect(() => {
 		dispatch(getItems());

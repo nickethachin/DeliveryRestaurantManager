@@ -3,7 +3,6 @@ import { useDispatch } from 'react-redux';
 import {
 	deleteMaterial,
 	openEditor,
-	updateMaterial,
 } from '../../features/materials/materialSlice';
 
 const MaterialItem = ({ material }) => {
