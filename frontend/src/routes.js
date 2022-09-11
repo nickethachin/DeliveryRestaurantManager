@@ -1,6 +1,7 @@
 import Dashboard from './pages/Dashboard';
 import Goals from './pages/Goals';
 import ItemManager from './pages/ItemManager';
+import ItemsetManager from './pages/ItemsetManager';
 import Login from './pages/Login';
 import MaterialManager from './pages/MaterialManager';
 import OrderManager from './pages/OrderManager';
@@ -54,6 +55,11 @@ const routes = [
 		path: '/rider-manager',
 		name: 'Rider Manager',
 		Component: RiderManager,
+	},
+	{
+		path: '/itemset-manager/*',
+		name: 'Itemset Manager',
+		Component: ItemsetManager,
 	},
 ];
 

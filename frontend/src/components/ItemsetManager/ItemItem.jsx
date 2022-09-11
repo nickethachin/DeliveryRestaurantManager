@@ -14,60 +14,61 @@ import { useState } from 'react';
 
 import CalculateIcon from '@mui/icons-material/Calculate';
 import { useDispatch, useSelector } from 'react-redux';
-import { editMaterial } from '../../features/items/itemSlice';
+import { editItem } from '../../features/itemsets/itemsetSlice';
 import RatioCalculator from '../RatioCalculator';
 
-const MaterialItem = ({ id, index, remove, options }) => {
+const ItemItemset = ({ id, index, remove, options }) => {
 	const dispatch = useDispatch();
 
-	const { matId, amount } = useSelector(
+	const { itemId, amount } = useSelector(
 		(state) =>
-			state.items.items.find((item) => item._id === id)
-				.materials[index]
+			state.itemsets.itemsets.find(
+				(itemset) => itemset._id === id
+			).items[index]
 	);
 	const { unit: matUnit } = useSelector((state) => {
-		if (matId != null) {
-			return state.materials.materials.find(
-				(material) => material._id === matId
+		if (itemId != null) {
+			return state.items.items.find(
+				(item) => item._id === itemId
 			);
 		} else return { unit: null };
 	});
 
 	// Autocomplete's value
 	const [value, setValue] = useState(() => {
-		if (matId != null) {
+		if (itemId != null) {
 			return options.find(
-				(option) => option.value === matId
+				(option) => option.value === itemId
 			);
 		} else return null;
 	});
 	const [anchorEl, setAnchorEl] = useState(null);
 
 	const handleChangeAmount = (event) => {
-		const material = {
-			matId,
-			amount: event.target.value,
+		const item = {
+			itemId,
+			amount: Number(event.target.value),
 		};
 		const payload = {
 			_id: id,
-			materialIndex: index,
-			material,
+			itemIndex: index,
+			item,
 		};
-		dispatch(editMaterial(payload));
+		dispatch(editItem(payload));
 	};
 
-	const handleChangeMaterial = (event, newValue) => {
+	const handleChangeItem = (event, newValue) => {
 		setValue(newValue);
-		const matId = newValue.value;
+		const itemId = newValue.value;
 		const payload = {
 			_id: id,
-			materialIndex: index,
-			material: {
-				matId,
+			itemIndex: index,
+			item: {
+				itemId,
 				amount,
 			},
 		};
-		dispatch(editMaterial(payload));
+		dispatch(editItem(payload));
 	};
 
 	const openCalculator = (event) => {
@@ -97,13 +98,13 @@ const MaterialItem = ({ id, index, remove, options }) => {
 					options={options}
 					value={value}
 					onChange={(event, newValue) => {
-						handleChangeMaterial(id, newValue);
+						handleChangeItem(id, newValue);
 					}}
 					isOptionEqualToValue={(option, value) =>
 						option.value === value.value
 					}
 					renderInput={(params) => (
-						<TextField {...params} label='Material' />
+						<TextField {...params} label='Item' />
 					)}
 				/>
 			</div>
@@ -160,4 +161,4 @@ const MaterialItem = ({ id, index, remove, options }) => {
 	);
 };
 
-export default MaterialItem;
+export default ItemItemset;
