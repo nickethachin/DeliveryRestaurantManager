@@ -21,12 +21,20 @@ const createMaterial = asyncHandler(async (req, res) => {
 	if (!req.body.type) missingField('type');
 	if (!req.body.unit) missingField('unit');
 
-	const material = await Material.create({
-		name: req.body.name,
-		type: req.body.type,
-		unit: req.body.unit,
-	});
-	res.status(200).json(material);
+	try {
+		const material = await Material.create({
+			name: req.body.name,
+			type: req.body.type,
+			unit: req.body.unit,
+		});
+		res.status(200).json(material);
+	} catch (error) {
+		if (error.code == 11000) {
+			res.status(400).json({ message: 'Duplicate name' });
+		} else {
+			res.status(500);
+		}
+	}
 });
 
 // @desc    Update material

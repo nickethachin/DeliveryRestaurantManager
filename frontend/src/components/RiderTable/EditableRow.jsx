@@ -17,6 +17,7 @@ const EditableRow = ({ itemset, rider, findPrice }) => {
 					sx={{ width: 50 }}
 					type='number'
 					name='amount'
+					value={editData}
 					required={true}
 					defaultValue={findPrice(rider, itemset._id)}
 					onFocus={handleInput}

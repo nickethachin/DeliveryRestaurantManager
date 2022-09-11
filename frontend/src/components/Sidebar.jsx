@@ -9,7 +9,6 @@ import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
 import {
 	Box,
 	Collapse,
-	createTheme,
 	Divider,
 	List,
 	ListItem,

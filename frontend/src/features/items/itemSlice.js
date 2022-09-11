@@ -78,13 +78,13 @@ export const itemSlice = createSlice({
 		reset: (state) => initialState,
 		editName: (state, { payload }) => {
 			const index = state.items.findIndex(
-				(item) => item._id == payload._id
+				(item) => item._id === payload._id
 			);
 			state.items[index].name = payload.name;
 		},
 		editMaterial: (state, { payload }) => {
 			const itemIndex = state.items.findIndex(
-				(item) => item._id == payload._id
+				(item) => item._id === payload._id
 			);
 			state.items[itemIndex].materials[
 				payload.materialIndex
@@ -92,7 +92,7 @@ export const itemSlice = createSlice({
 		},
 		addMaterial: (state, { payload }) => {
 			const itemIndex = state.items.findIndex(
-				(item) => item._id == payload._id
+				(item) => item._id === payload._id
 			);
 			state.items[itemIndex].materials.push({
 				matId: null,
@@ -101,7 +101,7 @@ export const itemSlice = createSlice({
 		},
 		removeMaterial: (state, { payload }) => {
 			const itemIndex = state.items.findIndex(
-				(item) => item._id == payload._id
+				(item) => item._id === payload._id
 			);
 			state.items[itemIndex].materials.splice(
 				payload.index,

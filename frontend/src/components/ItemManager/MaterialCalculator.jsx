@@ -6,7 +6,7 @@ import {
 	Typography,
 } from '@mui/material';
 import React, { useState } from 'react';
-const MaterialCalculator = ({ setAmount, close }) => {
+const MaterialCalculator = ({ setAmount, close, unit }) => {
 	const [input, setInput] = useState(0);
 	const [output, setOutput] = useState(0);
 
@@ -31,7 +31,7 @@ const MaterialCalculator = ({ setAmount, close }) => {
 				value={input}
 				onChange={(e) => setInput(e.target.value)}
 			/>
-			<Typography variant='body1'>เพื่อ</Typography>
+			<Typography variant='body1'>{unit} จะได้</Typography>
 			<TextField
 				type='number'
 				size='small'
