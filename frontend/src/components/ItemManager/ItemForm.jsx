@@ -31,12 +31,13 @@ const ItemForm = ({ id, handleSave }) => {
 		return { value: material._id, label: material.name };
 	});
 
-	const { name = 'test', materials: materialsList } =
-		useSelector((state) => {
+	const { name, materials: materialsList } = useSelector(
+		(state) => {
 			return state.items.items.find(
 				(item) => item._id == id
 			);
-		});
+		}
+	);
 
 	const handleNameInput = (event) => {
 		dispatch(

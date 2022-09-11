@@ -193,8 +193,6 @@ export const itemSlice = createSlice({
 
 export const {
 	reset,
-	openEditor,
-	closeEditor,
 	editName,
 	editMaterial,
 	addMaterial,
