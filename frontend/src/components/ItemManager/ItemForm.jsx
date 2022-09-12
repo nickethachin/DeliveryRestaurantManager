@@ -4,13 +4,11 @@ import {
 	TextField,
 } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import {
 	addMaterial,
 	editName,
 	getItems,
 	removeMaterial,
-	updateItem,
 } from '../../features/items/itemSlice';
 import Spinner from '../Spinner';
 import MaterialItem from './MaterialItem';
@@ -20,7 +18,6 @@ import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
 import SaveIcon from '@mui/icons-material/Save';
 
 const ItemForm = ({ id, handleSave }) => {
-	const navigate = useNavigate();
 	const dispatch = useDispatch();
 
 	// Get materials from store to use as dropdown option
@@ -34,7 +31,7 @@ const ItemForm = ({ id, handleSave }) => {
 	const { name, materials: materialsList } = useSelector(
 		(state) => {
 			return state.items.items.find(
-				(item) => item._id == id
+				(item) => item._id === id
 			);
 		}
 	);

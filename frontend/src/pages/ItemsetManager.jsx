@@ -31,7 +31,7 @@ const ItemsetManager = () => {
 		}
 		if (isError) {
 			toast.error(message);
-		} else if (message != '') {
+		} else if (message !== '') {
 			toast.done(message);
 		}
 	}, [user, isError, message]);

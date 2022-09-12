@@ -4,7 +4,6 @@ import {
 	TextField,
 } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import {
 	addItem,
 	editGasCost,
@@ -21,7 +20,6 @@ import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
 import SaveIcon from '@mui/icons-material/Save';
 
 const ItemsetForm = ({ id, handleSave }) => {
-	const navigate = useNavigate();
 	const dispatch = useDispatch();
 
 	// Get items from store to use as dropdown option
