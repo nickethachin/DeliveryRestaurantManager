@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { config } from '../frequentFunction';
 
-const API_URL = '/api/expense/expense/';
+const API_URL = '/api/expenses/';
 
 const getExpenses = async (token) => {
 	const response = await axios.get(API_URL, config(token));

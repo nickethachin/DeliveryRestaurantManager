@@ -18,7 +18,7 @@ export const store = configureStore({
 		riders: riderReducer,
 		materials: materialReducer,
 		items: itemReducer,
-		expenseCategory: categoryReducer,
-		expense: expenseReducer,
+		expenseCategories: categoryReducer,
+		expenses: expenseReducer,
 	},
 });

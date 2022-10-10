@@ -10,7 +10,6 @@ const initialState = {
 	isError: false,
 	isSuccess: false,
 	isLoading: false,
-	isEditing: false,
 	message: '',
 };
 
@@ -106,10 +105,18 @@ export const categorySlice = createSlice({
 			})
 			.addCase(
 				createCategory.fulfilled,
-				(state, action) => {
+				(state, { payload }) => {
 					state.isLoading = false;
 					state.isSuccess = true;
-					state.categories.push(action.payload);
+					state.categories.push(payload);
+					if (payload.parent !== null) {
+						const index = state.categories.findIndex(
+							(category) => category._id === payload.parent
+						);
+						state.categories[index].children.push(
+							payload._id
+						);
+					}
 				}
 			);
 
@@ -151,12 +158,28 @@ export const categorySlice = createSlice({
 			})
 			.addCase(
 				deleteCategory.fulfilled,
-				(state, action) => {
+				(state, { payload }) => {
 					state.isLoading = false;
 					state.isSuccess = true;
-					state.categories = state.categories.filter(
-						(category) => category._id !== action.payload.id
-					);
+					if (payload.parent !== undefined) {
+						const index = state.categories.findIndex(
+							(category) => payload.parent === category._id
+						);
+
+						state.categories[index] = {
+							...state.categories[index],
+							children: state.categories[
+								index
+							].children.filter(
+								(child) => child !== payload.id
+							),
+						};
+					} else {
+						state.categories = state.categories.filter(
+							(category) =>
+								!payload.id.includes(category._id)
+						);
+					}
 				}
 			);
 	},

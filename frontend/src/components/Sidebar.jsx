@@ -1,11 +1,12 @@
 import DeliveryDiningIcon from '@mui/icons-material/DeliveryDining';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
-import FlagIcon from '@mui/icons-material/Flag';
 import HomeIcon from '@mui/icons-material/Home';
 import LogoutIcon from '@mui/icons-material/Logout';
 import NightlightIcon from '@mui/icons-material/Nightlight';
+import PointOfSaleIcon from '@mui/icons-material/PointOfSale';
 import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
+import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
 import {
 	Box,
 	Collapse,
@@ -71,16 +72,21 @@ const Sidebar = ({ setTheme }) => {
 					icon={<HomeIcon />}
 				/>
 				<SideItem
-					name='Goals'
-					path='/goals'
-					icon={<FlagIcon />}
+					name='Order'
+					path='/'
+					icon={<PointOfSaleIcon />}
+				/>
+				<SideItem
+					name='Expense'
+					path='/expense-manager'
+					icon={<ShoppingBasketIcon />}
 				/>
 				<ListItem disablePadding>
 					<ListItemButton onClick={handleClickFoods}>
 						<ListItemIcon>
 							<RestaurantMenuIcon />
 						</ListItemIcon>
-						<ListItemText primary='Foods Editor' />
+						<ListItemText primary='Food Editor' />
 						{openFoods ? <ExpandLess /> : <ExpandMore />}
 					</ListItemButton>
 				</ListItem>
@@ -91,7 +97,7 @@ const Sidebar = ({ setTheme }) => {
 				>
 					<List component='div' disablePadding>
 						<SideItem
-							name='Materials'
+							name='Material'
 							path='/material-manager'
 							sx={{ pl: 4 }}
 						/>

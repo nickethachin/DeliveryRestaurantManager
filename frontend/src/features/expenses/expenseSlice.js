@@ -10,7 +10,6 @@ const initialState = {
 	isError: false,
 	isSuccess: false,
 	isLoading: false,
-	isEditing: false,
 	message: '',
 };
 
@@ -31,10 +30,13 @@ export const createExpense = createAsyncThunk(
 	async (expenseData, thunkAPI) => {
 		try {
 			const token = thunkAPI.getState().auth.user.token;
-			return await expenseService.createExpense(
-				expenseData,
-				token
-			);
+			return {
+				createdData: await expenseService.createExpense(
+					expenseData,
+					token
+				),
+				newList: await expenseService.getExpenses(token),
+			};
 		} catch (error) {
 			return thunkAPI.rejectWithValue(getError(error));
 		}
@@ -46,10 +48,13 @@ export const updateExpense = createAsyncThunk(
 	async (expenseData, thunkAPI) => {
 		try {
 			const token = thunkAPI.getState().auth.user.token;
-			return await expenseService.updateExpense(
-				expenseData,
-				token
-			);
+			return {
+				updatedData: await expenseService.updateExpense(
+					expenseData,
+					token
+				),
+				newList: await expenseService.getExpenses(token),
+			};
 		} catch (error) {
 			return thunkAPI.rejectWithValue(getError(error));
 		}
@@ -107,7 +112,8 @@ export const expenseSlice = createSlice({
 			.addCase(createExpense.fulfilled, (state, action) => {
 				state.isLoading = false;
 				state.isSuccess = true;
-				state.expenses.push(action.payload);
+				state.expenses = action.payload.newList;
+				// state.expenses.push(action.payload.createdData);
 			});
 
 		// Update expense
@@ -115,21 +121,22 @@ export const expenseSlice = createSlice({
 			.addCase(updateExpense.pending, (state) => {
 				state.isLoading = true;
 			})
-			.addCase(updateExpense.fulfilled, (state, action) => {
-				state.isLoading = false;
-				state.isSuccess = true;
-				const index = state.expenses.findIndex(
-					(expense) => expense._id === action.payload._id
-				);
-				state.expenses[index] = {
-					...state.expenses[index],
-					...action.payload,
-				};
-			})
 			.addCase(updateExpense.rejected, (state, action) => {
 				state.isLoading = false;
 				state.isError = true;
 				state.message = action.payload;
+			})
+			.addCase(updateExpense.fulfilled, (state, action) => {
+				state.isLoading = false;
+				state.isSuccess = true;
+				state.expenses = action.payload.newList;
+				// const index = state.expenses.findIndex(
+				// 	(expense) => expense._id === action.payload._id
+				// );
+				// state.expenses[index] = {
+				// 	...state.expenses[index],
+				// 	...action.payload,
+				// };
 			});
 
 		// Delete expense
@@ -142,13 +149,16 @@ export const expenseSlice = createSlice({
 				state.isError = true;
 				state.message = action.payload;
 			})
-			.addCase(deleteExpense.fulfilled, (state, action) => {
-				state.isLoading = false;
-				state.isSuccess = true;
-				state.expenses = state.expenses.filter(
-					(expense) => expense._id !== action.payload.id
-				);
-			});
+			.addCase(
+				deleteExpense.fulfilled,
+				(state, { payload }) => {
+					state.isLoading = false;
+					state.isSuccess = true;
+					state.expenses = state.expenses.filter(
+						(expense) => expense._id !== payload.id
+					);
+				}
+			);
 	},
 });
 

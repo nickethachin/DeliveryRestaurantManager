@@ -17,11 +17,13 @@ router.route('/').post(protect, createExpenses);
 router.route('/:id').put(protect, updateExpenses);
 router.route('/:id').delete(protect, deleteExpenses);
 
-router.route('/category/').get(protect, getCategories);
-router.route('/category/').post(protect, createCategory);
-router.route('/category/:id').put(protect, updateCategory);
+router.route('/categories/').get(protect, getCategories);
+router.route('/categories/').post(protect, createCategory);
 router
-	.route('/category/:id')
+	.route('/categories/:id')
+	.put(protect, updateCategory);
+router
+	.route('/categories/:id')
 	.delete(protect, deleteCategory);
 
 module.exports = router;
