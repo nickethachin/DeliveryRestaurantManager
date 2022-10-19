@@ -29,6 +29,17 @@ const ExpenseForm = ({
 	const { categories } = useSelector(
 		(state) => state.expenseCategories
 	);
+
+	const { isLoading: materialsIsLoading } = useSelector(
+		(state) => state.materials
+	);
+	const { isLoading: categoriesIsLoading } = useSelector(
+		(state) => state.expenseCategories
+	);
+	const { isLoading: expensesIsLoading } = useSelector(
+		(state) => state.expenses
+	);
+
 	const mainCategories = categories
 		.filter((category) => category.parent === null)
 		.map((parent) => {
@@ -79,6 +90,8 @@ const ExpenseForm = ({
 		}
 
 		const hasChildren =
+			mainCategoryData !== undefined &&
+			'children' in mainCategoryData &&
 			mainCategoryData.children.length > 0;
 		if (hasChildren) {
 			setSubCategories(() => {
@@ -173,179 +186,195 @@ const ExpenseForm = ({
 		saveToDatabase();
 		navigate('/expense-manager/');
 	};
-	return (
-		<Stack spacing={2}>
-			<Stack direction='row' spaceing={2}>
-				<Autocomplete
-					fullWidth
-					options={mainCategories}
-					renderInput={(params) => (
-						<TextField {...params} label='Category' />
+	if (
+		!materialsIsLoading ||
+		!categoriesIsLoading ||
+		!expensesIsLoading
+	) {
+		return (
+			<Stack spacing={2}>
+				<Stack direction='row' spaceing={2}>
+					<Autocomplete
+						fullWidth
+						options={mainCategories}
+						renderInput={(params) => (
+							<TextField {...params} label='Category' />
+						)}
+						value={selectMainCategory}
+						onChange={(event, newValue) => {
+							setMainCategory(newValue);
+							setSelectItem(null);
+							setAmount('');
+							setDesc('');
+						}}
+						inputValue={mainCategoriesInput}
+						onInputChange={(event, newInputValue) => {
+							setMainCategoriesInput(newInputValue);
+						}}
+						isOptionEqualToValue={(option, value) => {
+							if (value !== undefined) {
+								return option.id === value.id;
+							}
+						}}
+					/>
+					{subCategories && subCategories.length > 0 ? (
+						<Autocomplete
+							fullWidth
+							options={subCategories}
+							renderInput={(params) => (
+								<TextField
+									{...params}
+									label='Sub-Category'
+								/>
+							)}
+							value={selectSubCategory}
+							onChange={(event, newValue) => {
+								setSubCategory(newValue);
+							}}
+							inputValue={subCategoriesInput}
+							onInputChange={(event, newInputValue) => {
+								setSubCategoriesInput(newInputValue);
+							}}
+							isOptionEqualToValue={(option, value) =>
+								option.id === value.id
+							}
+						/>
+					) : null}
+				</Stack>
+
+				{selectMainCategory &&
+				(selectMainCategory.label.toLowerCase() ===
+					'ingredient' ||
+					selectMainCategory.label.toLowerCase() ===
+						'packaging') ? (
+					<Stack
+						direction='row'
+						alignItems='center'
+						justifyContent='space-between'
+						spacing={2}
+					>
+						<Autocomplete
+							size='small'
+							fullWidth
+							options={items.filter((item) => {
+								const label =
+									selectMainCategory.label.toLowerCase();
+								return (label === 'ingredient' ||
+									label === 'packaging') &&
+									label === 'ingredient'
+									? 'ingredient'
+									: 'package';
+							})}
+							renderInput={(params) => (
+								<TextField
+									{...params}
+									label='Select ingredient'
+								/>
+							)}
+							value={selectItem}
+							onChange={(event, newValue) => {
+								setSelectItem(newValue);
+							}}
+							inputValue={itemInput}
+							onInputChange={(event, newInputValue) => {
+								setItemInput(newInputValue);
+							}}
+							isOptionEqualToValue={(option, value) =>
+								option.id === value.id
+							}
+						/>
+
+						<TextField
+							type='number'
+							size='small'
+							value={amount}
+							onChange={(event) =>
+								setAmount(event.target.value)
+							}
+						/>
+						<Typography variant='body'>
+							{selectItem !== undefined &&
+							selectItem !== null &&
+							'unit' in selectItem
+								? selectItem.unit
+								: 'unit'}
+						</Typography>
+					</Stack>
+				) : (
+					<Stack
+						direction='row'
+						spacing={2}
+						alignItems='center'
+						justifyContent='space-between'
+					>
+						<TextField
+							fullWidth
+							label='Expense description/name'
+							value={desc}
+							onChange={(event) =>
+								setDesc(event.target.value)
+							}
+						/>
+						<TextField
+							type='number'
+							value={amount}
+							label='Amount'
+							onChange={(event) =>
+								setAmount(event.target.value)
+							}
+						/>
+					</Stack>
+				)}
+				<Stack
+					direction='row'
+					alignItems='center'
+					justifyContent='space-between'
+				>
+					<DatePickerNow value={date} setValue={setDate} />
+					<Stack
+						direction='row'
+						alignItems='center'
+						spacing={2}
+					>
+						<Typography variant='h6'>Total</Typography>
+						<TextField
+							type='number'
+							value={total}
+							onChange={(event) =>
+								setTotal(event.target.value)
+							}
+							helperText='Total cost for this expenses (฿)'
+						/>
+						<Typography variant='h6'>฿</Typography>
+					</Stack>
+				</Stack>
+
+				<Stack
+					direction='row'
+					alignItems='center'
+					justifyContent='flex-end'
+					spacing={2}
+				>
+					{expense ? null : (
+						<Button
+							variant='contained'
+							onClick={handleSaveAndRepeat}
+						>
+							<RepeatIcon />
+							Save & Add new Expense
+						</Button>
 					)}
-					value={selectMainCategory}
-					onChange={(event, newValue) => {
-						setMainCategory(newValue);
-						setSelectItem(null);
-						setAmount('');
-						setDesc('');
-					}}
-					inputValue={mainCategoriesInput}
-					onInputChange={(event, newInputValue) => {
-						setMainCategoriesInput(newInputValue);
-					}}
-					isOptionEqualToValue={(option, value) =>
-						option.id === value.id
-					}
-				/>
-				{subCategories && subCategories.length > 0 ? (
-					<Autocomplete
-						fullWidth
-						options={subCategories}
-						renderInput={(params) => (
-							<TextField {...params} label='Sub-Category' />
-						)}
-						value={selectSubCategory}
-						onChange={(event, newValue) => {
-							setSubCategory(newValue);
-						}}
-						inputValue={subCategoriesInput}
-						onInputChange={(event, newInputValue) => {
-							setSubCategoriesInput(newInputValue);
-						}}
-						isOptionEqualToValue={(option, value) =>
-							option.id === value.id
-						}
-					/>
-				) : null}
-			</Stack>
-
-			{selectMainCategory &&
-			(selectMainCategory.label.toLowerCase() ===
-				'ingredient' ||
-				selectMainCategory.label.toLowerCase() ===
-					'packaging') ? (
-				<Stack
-					direction='row'
-					alignItems='center'
-					justifyContent='space-between'
-					spacing={2}
-				>
-					<Autocomplete
-						size='small'
-						fullWidth
-						options={items.filter((item) => {
-							const label =
-								selectMainCategory.label.toLowerCase();
-							if (label === 'ingredient')
-								return item.type === 'ingredient';
-							if (label === 'packaging')
-								return item.type === 'package';
-						})}
-						renderInput={(params) => (
-							<TextField
-								{...params}
-								label='Select ingredient'
-							/>
-						)}
-						value={selectItem}
-						onChange={(event, newValue) => {
-							setSelectItem(newValue);
-						}}
-						inputValue={itemInput}
-						onInputChange={(event, newInputValue) => {
-							setItemInput(newInputValue);
-						}}
-						isOptionEqualToValue={(option, value) =>
-							option.id === value.id
-						}
-					/>
-
-					<TextField
-						type='number'
-						size='small'
-						value={amount}
-						onChange={(event) =>
-							setAmount(event.target.value)
-						}
-					/>
-					<Typography variant='body'>
-						{selectItem !== null ? selectItem.unit : 'unit'}
-					</Typography>
-				</Stack>
-			) : (
-				<Stack
-					direction='row'
-					spacing={2}
-					alignItems='center'
-					justifyContent='space-between'
-				>
-					<TextField
-						fullWidth
-						label='Expense description/name'
-						value={desc}
-						onChange={(event) =>
-							setDesc(event.target.value)
-						}
-					/>
-					<TextField
-						type='number'
-						value={amount}
-						label='Amount'
-						onChange={(event) =>
-							setAmount(event.target.value)
-						}
-					/>
-				</Stack>
-			)}
-			<Stack
-				direction='row'
-				alignItems='center'
-				justifyContent='space-between'
-			>
-				<DatePickerNow value={date} setValue={setDate} />
-				<Stack
-					direction='row'
-					alignItems='center'
-					spacing={2}
-				>
-					<Typography variant='h6'>Total</Typography>
-					<TextField
-						type='number'
-						value={total}
-						onChange={(event) =>
-							setTotal(event.target.value)
-						}
-						helperText='Total cost for this expenses (฿)'
-					/>
-					<Typography variant='h6'>฿</Typography>
-				</Stack>
-			</Stack>
-
-			<Stack
-				direction='row'
-				alignItems='center'
-				justifyContent='flex-end'
-				spacing={2}
-			>
-				{expense ? null : (
 					<Button
 						variant='contained'
-						onClick={handleSaveAndRepeat}
+						onClick={handleSaveAndBack}
 					>
-						<RepeatIcon />
-						Save & Add new Expense
+						<ArrowBackIcon />
+						Save & Go back
 					</Button>
-				)}
-				<Button
-					variant='contained'
-					onClick={handleSaveAndBack}
-				>
-					<ArrowBackIcon />
-					Save & Go back
-				</Button>
+				</Stack>
 			</Stack>
-		</Stack>
-	);
+		);
+	} else return <></>;
 };
 
 export default ExpenseForm;

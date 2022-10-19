@@ -19,7 +19,6 @@ import ExpenseEdit from '../components/ExpenseManager/ExpenseEdit';
 const ExpenseManager = () => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
-
 	const { user } = useSelector((state) => state.auth);
 	const { isLoading, isError, message } = useSelector(
 		(state) => state.expenses
@@ -32,12 +31,12 @@ const ExpenseManager = () => {
 		if (isError) {
 			toast.error(message);
 		}
-	}, [user, isError, message]);
+	}, [user, isError, message, navigate]);
 
 	useEffect(() => {
 		dispatch(getExpenses());
 		dispatch(getCategories());
-	}, []);
+	}, [dispatch]);
 
 	const handleCategoryClick = () => {
 		navigate(`/expense-manager/category/`);

@@ -17,7 +17,6 @@ import { toast } from 'react-toastify';
 import {
 	createExpense,
 	deleteExpense,
-	getExpenses,
 } from '../../features/expenses/expenseSlice';
 
 const ExpensesTable = () => {
@@ -25,9 +24,6 @@ const ExpensesTable = () => {
 	const dispatch = useDispatch();
 	const { expenses } = useSelector(
 		(state) => state.expenses
-	);
-	const { categories } = useSelector(
-		(state) => state.expenseCategories
 	);
 
 	let rows = [];
