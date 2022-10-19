@@ -1,4 +1,6 @@
+import CategoryManager from './pages/CategoryManager';
 import Dashboard from './pages/Dashboard';
+import ExpenseManager from './pages/ExpenseManager';
 import Goals from './pages/Goals';
 import ItemManager from './pages/ItemManager';
 import ItemsetManager from './pages/ItemsetManager';
@@ -60,6 +62,16 @@ const routes = [
 		path: '/itemset-manager/*',
 		name: 'Itemset Manager',
 		Component: ItemsetManager,
+	},
+	{
+		path: '/expense-manager/*',
+		name: 'Expense Manager',
+		Component: ExpenseManager,
+	},
+	{
+		path: '/expense-manager/category/*',
+		name: 'Expense category Manager',
+		Component: CategoryManager,
 	},
 ];
 
