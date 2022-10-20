@@ -6,9 +6,10 @@ import {
 	updateItemset,
 } from '../../features/itemsets/itemsetSlice';
 import GoBackButton from '../GoBackButton';
+import Spinner from '../Spinner';
 import ItemsetForm from './ItemsetForm';
 
-const ItemsetEdit = () => {
+const ItemsetEdit = ({ isLoading }) => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const { id } = useParams();
@@ -31,6 +32,7 @@ const ItemsetEdit = () => {
 		dispatch(updateItemset(itemsetData));
 		navigate('/itemset-manager');
 	};
+	if (isLoading) return <Spinner />;
 	return (
 		<>
 			<Stack

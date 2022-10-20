@@ -14,6 +14,7 @@ import { toast } from 'react-toastify';
 import ItemsetCreate from '../components/ItemsetManager/ItemsetCreate';
 import ItemsetEdit from '../components/ItemsetManager/ItemsetEdit';
 import ItemsetTable from '../components/ItemsetManager/ItemsetTable';
+import Spinner from '../components/Spinner';
 import { getItems } from '../features/items/itemSlice';
 import { getItemsets } from '../features/itemsets/itemsetSlice';
 
@@ -21,26 +22,26 @@ const ItemsetManager = () => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 
-	const { isLoading, isError, message } = useSelector(
+	const { isLoading: isItemsetsLoading } = useSelector(
 		(state) => state.itemsets
 	);
+	const { isLoading: isItemsLoading } = useSelector(
+		(state) => state.items
+	);
+	const isLoading = isItemsetsLoading && isItemsLoading;
 	const { user } = useSelector((state) => state.auth);
 	useEffect(() => {
 		if (!user) {
 			navigate('/login');
 		}
-		if (isError) {
-			toast.error(message);
-		} else if (message !== '') {
-			toast.done(message);
-		}
-	}, [user, isError, message]);
+	}, [user]);
 
 	useEffect(() => {
 		dispatch(getItemsets());
 		dispatch(getItems());
 	}, []);
 
+	if (isLoading) return <Spinner />;
 	return (
 		<>
 			<Typography variant='h5'>Itemset Manager</Typography>
@@ -51,8 +52,14 @@ const ItemsetManager = () => {
 			)}
 			<Routes>
 				<Route path='' element={<ItemsetTable />} />
-				<Route path='create' element={<ItemsetCreate />} />
-				<Route path='edit/:id' element={<ItemsetEdit />} />
+				<Route
+					path='create'
+					element={<ItemsetCreate isLoading={isLoading} />}
+				/>
+				<Route
+					path='edit/:id'
+					element={<ItemsetEdit isLoading={isLoading} />}
+				/>
 			</Routes>
 		</>
 	);

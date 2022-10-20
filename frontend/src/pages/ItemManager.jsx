@@ -20,33 +20,37 @@ const ItemManager = () => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 
-	const { isLoading, isError, message } = useSelector(
+	const { isLoading: isItemsLoading } = useSelector(
 		(state) => state.items
 	);
+	const { isLoading: isMaterialsLoading } = useSelector(
+		(state) => state.materials
+	);
+	const isLoading = isItemsLoading && isMaterialsLoading;
 
 	const { user } = useSelector((state) => state.auth);
 	useEffect(() => {
 		if (!user) {
 			navigate('/login');
 		}
-		if (isError) {
-			toast.error(message);
-		}
-	}, [user, isError, message]);
+	}, [user]);
 
 	useEffect(() => {
 		dispatch(getItems());
 		dispatch(getMaterials());
 	}, []);
-
+	if (isLoading) {
+		return (
+			<>
+				<Typography variant='h5'>Item Manager</Typography>
+				<LinearProgress sx={{ my: 2 }} />
+			</>
+		);
+	}
 	return (
 		<>
 			<Typography variant='h5'>Item Manager</Typography>
-			{isLoading ? (
-				<LinearProgress sx={{ my: 2 }} />
-			) : (
-				<Divider sx={{ my: 2 }} />
-			)}
+			<Divider sx={{ my: 2 }} />
 			<Routes>
 				<Route path='' element={<ItemTable />} />
 				<Route path='create' element={<ItemCreate />} />
