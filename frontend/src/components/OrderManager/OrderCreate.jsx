@@ -7,7 +7,6 @@ import {
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import SaveIcon from '@mui/icons-material/Save';
 import OrderDetails from './OrderDetails';
 import OrderQuickSelect from './OrderQuickSelect';
 
@@ -17,15 +16,15 @@ const OrderCreate = () => {
 	const { itemsets } = useSelector(
 		(state) => state.itemsets
 	);
-	const { riders } = useSelector((state) => state.riders);
+	const { riders, isLoading } = useSelector(
+		(state) => state.riders
+	);
 
 	const [selectRider, setSelectRider] = useState('');
 	const [riderData, setRiderData] = useState({ name: '' });
 	const [orderList, setOrderList] = useState([]);
-
 	const orderAddItem = (id) => {
 		let newOrders = orderList;
-
 		// find item in orderList
 		const itemIndex = newOrders.findIndex(
 			(order) => order._id === id
@@ -42,10 +41,25 @@ const OrderCreate = () => {
 		}
 		setOrderList([...newOrders]);
 	};
-	const orderRemoveItem = () => {};
-
+	const orderRemoveItem = (id) => {
+		let newOrders = orderList;
+		// find item in orderList
+		const itemIndex = newOrders.findIndex(
+			(order) => order._id === id
+		);
+		const item = newOrders[itemIndex];
+		if (item.amount > 1) {
+			newOrders[itemIndex].amount--;
+		} else {
+			newOrders.splice(itemIndex, 1);
+		}
+		setOrderList([...newOrders]);
+	};
+	const orderReset = () => {
+		setOrderList([]);
+	};
 	const handleRiderChange = (event, newRider) => {
-		setSelectRider(newRider);
+		if (newRider !== null) setSelectRider(newRider);
 	};
 
 	useEffect(() => {
@@ -83,8 +97,12 @@ const OrderCreate = () => {
 				/>
 				<CardContent sx={{ height: '100%' }}>
 					<OrderDetails
+						selectRider={selectRider}
 						riderData={riderData}
 						orderList={orderList}
+						addAction={orderAddItem}
+						removeAction={orderRemoveItem}
+						resetAction={orderReset}
 					/>
 				</CardContent>
 			</Card>

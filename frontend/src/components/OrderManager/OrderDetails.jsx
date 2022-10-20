@@ -1,14 +1,30 @@
+import DoNotDisturbIcon from '@mui/icons-material/DoNotDisturb';
+import SaveIcon from '@mui/icons-material/Save';
 import {
+	Box,
+	Button,
+	ButtonGroup,
+	Divider,
 	IconButton,
 	Stack,
 	Typography,
 } from '@mui/material';
-import { useSelector } from 'react-redux';
+import dayjs from 'dayjs';
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { createOrder } from '../../features/orders/orderSlice';
+import DatePickerNow from '../DatePickerNow';
 
-import DoNotDisturbIcon from '@mui/icons-material/DoNotDisturb';
-import SaveIcon from '@mui/icons-material/Save';
-
-const OrderDetails = ({ riderData, orderList }) => {
+const OrderDetails = ({
+	selectRider,
+	riderData,
+	orderList,
+	addAction,
+	removeAction,
+	resetAction,
+}) => {
+	const dispatch = useDispatch();
+	const [date, setDate] = useState(null);
 	let prices = [];
 	if (riderData && 'price' in riderData) {
 		prices = riderData.price;
@@ -34,6 +50,19 @@ const OrderDetails = ({ riderData, orderList }) => {
 		return totals;
 	};
 
+	const handleSaveClick = () => {
+		const order = {
+			rider: selectRider,
+			details: orderList.map((item) => {
+				return { itemset: item._id, amount: item.amount };
+			}),
+			date:
+				date !== null ? dayjs(date).toDate() : undefined,
+		};
+		dispatch(createOrder(order));
+		resetAction();
+	};
+
 	return (
 		<Stack
 			direction='column'
@@ -51,20 +80,57 @@ const OrderDetails = ({ riderData, orderList }) => {
 				<Typography>Please select rider</Typography>
 			)}
 			<Stack direction='column'>
-				{orderList.length > 0
+				{selectRider && orderList.length > 0
 					? orderList.map((order, index) => (
-							<Stack
-								key={index}
-								direction='row'
-								justifyContent='space-between'
-							>
-								<Typography>
-									{order.amount}x {order.name}
-								</Typography>
-								<Typography>
-									{calculatePrice(order._id, order.amount)}฿
-								</Typography>
-							</Stack>
+							<>
+								<Stack
+									key={index}
+									direction='row'
+									justifyContent='space-between'
+									alignItems='center'
+								>
+									<Stack
+										direction='row'
+										spacing={1}
+										alignItems='center'
+									>
+										<ButtonGroup
+											size='small'
+											orientation='vertical'
+										>
+											<IconButton
+												size='small'
+												onClick={() => addAction(order._id)}
+											>
+												+
+											</IconButton>
+											<IconButton
+												size='small'
+												onClick={() =>
+													removeAction(order._id)
+												}
+											>
+												-
+											</IconButton>
+										</ButtonGroup>
+										<Divider
+											orientation='vertical'
+											flexItem
+										/>
+										<Typography>
+											{order.amount}x {order.name}
+										</Typography>
+									</Stack>
+									<Typography>
+										{calculatePrice(
+											order._id,
+											order.amount
+										)}
+										฿
+									</Typography>
+								</Stack>
+								<Divider variant='middle' />
+							</>
 					  ))
 					: null}
 			</Stack>
@@ -74,13 +140,28 @@ const OrderDetails = ({ riderData, orderList }) => {
 						Totals: {calculateTotal()}
 					</Typography>
 				</Stack>
-				<Stack direction='row' justifyContent='flex-end'>
-					<IconButton color='success'>
-						<SaveIcon />
-					</IconButton>
-					<IconButton color='error'>
-						<DoNotDisturbIcon />
-					</IconButton>
+				<Stack
+					direction='row'
+					justifyContent='space-between'
+					alignItems='center'
+				>
+					<DatePickerNow value={date} setValue={setDate} />
+					<Box>
+						<IconButton
+							color='success'
+							onClick={handleSaveClick}
+							size='large'
+						>
+							<SaveIcon size='large' />
+						</IconButton>
+						<IconButton
+							color='error'
+							size='large'
+							onClick={resetAction}
+						>
+							<DoNotDisturbIcon />
+						</IconButton>
+					</Box>
 				</Stack>
 			</Stack>
 		</Stack>

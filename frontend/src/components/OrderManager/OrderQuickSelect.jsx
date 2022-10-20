@@ -40,9 +40,7 @@ const OrderQuickSelect = ({
 								variant='outlined'
 								size='large'
 								onClick={() => orderAddItem(itemset._id)}
-								disabled={
-									riderData === undefined ? true : false
-								}
+								disabled={!selectRider ? true : false}
 							>
 								{itemset.name}
 							</Button>
