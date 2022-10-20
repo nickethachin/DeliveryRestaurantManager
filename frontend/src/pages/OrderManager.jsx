@@ -1,87 +1,78 @@
 import {
-	Paper,
-	Table,
-	TableBody,
-	TableCell,
-	TableContainer,
-	TableHead,
-	TableRow,
+	Container,
+	Divider,
+	LinearProgress,
+	Typography,
 } from '@mui/material';
-import { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import RiderToggleButton from '../components/RiderToggleButton';
 import Spinner from '../components/Spinner';
-import {
-	getItemsets,
-	reset as itemsetReset,
-} from '../features/itemsets/itemsetSlice';
+import { getItemsets } from '../features/itemsets/itemsetSlice';
+import { getRiders } from '../features/riders/riderSlice';
+
+import SaveIcon from '@mui/icons-material/Save';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import OrderCreate from '../components/OrderManager/OrderCreate';
+
+const orders = [
+	{
+		_id: '1234567890',
+		riderId: '62e4ed1e47c29ab190eb7358',
+		details: [
+			{
+				itemsetId: '62e4fa6ec7be9c26f1f7a026',
+				amount: 2,
+			},
+		],
+	},
+	{
+		_id: '951468273',
+		riderId: '62e4ed2247c29ab190eb735b',
+		details: [
+			{
+				itemsetId: '62e5030ab51423ac2378c880',
+				amount: 1,
+			},
+			{
+				itemsetId: '62e5032fb51423ac2378c883',
+				amount: 1,
+			},
+			{
+				itemsetId: '62e50496b51423ac2378c892',
+				amount: 1,
+			},
+			{
+				itemsetId: '62e50528b51423ac2378c89e',
+				amount: 2,
+			},
+		],
+	},
+];
 
 const OrderManager = () => {
-	const navigate = useNavigate();
 	const dispatch = useDispatch();
-
-	const { user } = useSelector((state) => state.auth);
-
-	// Prepare Itemsets state
-	const {
-		itemsets,
-		isLoading: isItemsetLoading,
-		isError: isItemsetError,
-		message: itemsetMessage,
-	} = useSelector((state) => state.itemsets);
-
-	// Check if logged in
-	useEffect(
-		(navigate) => {
-			if (!user) navigate('/login');
-		},
-		[user]
-	);
-
-	// Get itemsets
 	useEffect(() => {
-		if (isItemsetError) console.log(itemsetMessage);
 		dispatch(getItemsets());
-		return () => dispatch(itemsetReset());
-	}, [navigate, isItemsetError, itemsetMessage, dispatch]);
+		dispatch(getRiders());
+	}, [dispatch]);
 
-	// Play spinner if loading
-	if (isItemsetLoading) return <Spinner />;
+	const { itemsets, isLoading: isItemsetsLoading } =
+		useSelector((state) => state.itemsets);
+	const { riders, isLoading: isRidersLoading } =
+		useSelector((state) => state.riders);
+	const isLoading = isItemsetsLoading && isRidersLoading;
 
-	// TODO: Continue working on each rider's price
-	function addItem(itemset) {
-		console.log(itemset);
-	}
+	if (!itemsets || !riders) return <Spinner />;
 	return (
-		<>
-			<RiderToggleButton />
-			<TableContainer component={Paper}>
-				<Table stickyHeader>
-					<TableHead>
-						<TableRow>
-							<TableCell>Name</TableCell>
-							<TableCell>Price</TableCell>
-						</TableRow>
-					</TableHead>
-					<TableBody>
-						{itemsets ? (
-							itemsets.map((itemset) => (
-								<TableRow
-									key={itemset._id}
-									onClick={() => addItem(itemset)}
-								>
-									<TableCell>{itemset.name}</TableCell>
-									<TableCell>??</TableCell>
-								</TableRow>
-							))
-						) : (
-							<Spinner />
-						)}
-					</TableBody>
-				</Table>
-			</TableContainer>
-		</>
+		<Container>
+			<Typography variant='h5'>Order Manager</Typography>
+			{isLoading ? (
+				<LinearProgress sx={{ my: 2 }} />
+			) : (
+				<Divider sx={{ my: 2 }} />
+			)}
+			<OrderCreate />
+		</Container>
 	);
 };
 
