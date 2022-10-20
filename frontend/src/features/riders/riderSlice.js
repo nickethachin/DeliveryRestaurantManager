@@ -34,7 +34,26 @@ export const createRider = createAsyncThunk(
 	}
 );
 
-// Get user's rider
+// Update rider's item price
+export const updateItemPrice = createAsyncThunk(
+	'riders/updateItemPrice',
+	async (data, thunkAPI) => {
+		try {
+			const token = thunkAPI.getState().auth.user.token;
+			return await riderService.updatePrice(data, token);
+		} catch (error) {
+			const message =
+				(error.response &&
+					error.response.data &&
+					error.response.data.message) ||
+				error.message ||
+				error.toString();
+			return thunkAPI.rejectWithValue(message);
+		}
+	}
+);
+
+// Get rider
 export const getRiders = createAsyncThunk(
 	'riders/getAll',
 	async (query = null, thunkAPI) => {
@@ -53,7 +72,7 @@ export const getRiders = createAsyncThunk(
 	}
 );
 
-// Delete user's rider
+// Delete rider
 export const deleteRider = createAsyncThunk(
 	'riders/delete',
 	async (id, thunkAPI) => {

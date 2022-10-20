@@ -73,7 +73,7 @@ const Sidebar = ({ setTheme }) => {
 				/>
 				<SideItem
 					name='Order'
-					path='/'
+					path='/order-manager'
 					icon={<PointOfSaleIcon />}
 				/>
 				<SideItem
