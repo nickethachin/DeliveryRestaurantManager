@@ -1,155 +1,171 @@
-import { IconButton, Paper, Stack } from '@mui/material';
-import Box from '@mui/material/Box';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
+import RemoveIcon from '@mui/icons-material/Remove';
+import SaveIcon from '@mui/icons-material/Save';
+import {
+	Button,
+	ButtonGroup,
+	Container,
+	Divider,
+	IconButton,
+	LinearProgress,
+	Stack,
+	Typography,
+} from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import {
-	getItemsets,
-	reset as itemsetReset,
-} from '../features/itemsets/itemsetSlice';
+import { toast } from 'react-toastify';
+import CreateForm from '../components/RiderManager/CreateForm';
+import PriceTable from '../components/RiderManager/PriceTable';
+import Spinner from '../components/Spinner';
+import { getItemsets } from '../features/itemsets/itemsetSlice';
 import {
 	createRider,
+	deleteRider,
 	getRiders,
-	reset as riderReset,
+	updateItemPrice,
 } from '../features/riders/riderSlice';
 
-// Components
-import CreateForm from '../components/RiderTable/CreateForm';
-import DeleteRiderButton from '../components/RiderTable/DeleteRiderButton';
-import PriceTable from '../components/RiderTable/PriceTable';
-import RiderTabs from '../components/RiderTabs';
-import Spinner from '../components/Spinner';
-
-// Icons
-import CreateIcon from '@mui/icons-material/AddCircle';
-import CancelIcon from '@mui/icons-material/Cancel';
-import SaveIcon from '@mui/icons-material/Save';
-
 const RiderManager = () => {
-	// TODO: Finish create rider
-	const navigate = useNavigate();
 	const dispatch = useDispatch();
-
-	// Get user state
-	const { user } = useSelector((state) => state.auth);
-	// Check if logged in
-	useEffect(
-		(navigate) => {
-			if (!user) navigate('/login');
-		},
-		[user]
+	const { riders, isLoading } = useSelector(
+		(state) => state.riders
 	);
 
-	// State for create new rider
+	const [selectRider, setSelectRider] = useState('');
 	const [isCreating, setIsCreating] = useState(false);
-	function toggleCreating() {
-		setIsCreating(!isCreating);
-	}
-
-	// Tabs state
-	const [tabValue, setTabValue] = useState(0);
-	const [selectTab, setSelectTab] = useState();
-
-	// Form data state
-	const [formData, setFormData] = useState({
+	const formInitial = {
 		name: '',
 		fees: '',
 		tax: '',
-		gas: '',
-	});
+		gasCost: '',
+	};
+	const [formData, setFormData] = useState(formInitial);
 
-	// Get riders
-	const {
-		riders,
-		isLoading: isRiderLoading,
-		isError: isRiderError,
-		message: riderMessage,
-	} = useSelector((state) => state.riders);
-	useEffect(() => {
-		if (isRiderError) console.log(riderMessage);
-		dispatch(getRiders());
-		return () => dispatch(riderReset());
-	}, [navigate, isRiderError, riderMessage, dispatch]);
+	const handleClickRider = (id) => {
+		const riderData = riders.find(
+			(rider) => rider._id === id
+		);
+		setSelectRider({ ...riderData });
+	};
 
-	// Get itemsets
-	const {
-		itemsets,
-		isLoading: isItemsetLoading,
-		isError: isItemsetError,
-		message: itemsetMessage,
-	} = useSelector((state) => state.itemsets);
-	useEffect(() => {
-		if (isItemsetError) console.log(itemsetMessage);
-		dispatch(getItemsets());
-		return () => dispatch(itemsetReset());
-	}, [navigate, isItemsetError, itemsetMessage, dispatch]);
+	const formOpen = () => {
+		setIsCreating(true);
+	};
 
-	function handleSaveClick(event) {
-		event.preventDefault();
-		dispatch(createRider(formData));
-		setFormData({
-			name: '',
-			fees: '',
-			tax: '',
-			gas: '',
-		});
+	const formClose = () => {
+		formReset();
 		setIsCreating(false);
-	}
+	};
 
-	// Show spinner if any state is loading
-	if (isItemsetLoading || isRiderLoading)
-		return <Spinner />;
+	const formReset = () => {
+		setFormData(formInitial);
+	};
 
+	const formSave = () => {
+		let message = 'Missing ';
+		if (formData.name === '') message = `${message} Name`;
+		if (formData.fees === '') message = `${message} Fees`;
+		if (formData.tax === '') message = `${message} Tax`;
+		message = `${message} field(s).`;
+
+		if (message !== 'Missing  field(s).') {
+			toast.error(message);
+			return;
+		}
+
+		dispatch(createRider(formData));
+		formClose();
+	};
+
+	const handleDeleteClick = () => {
+		dispatch(deleteRider(selectRider._id));
+	};
+
+	const savePrice = (newRow) => {
+		const data = {
+			rider: selectRider._id,
+			itemset: newRow.itemset._id,
+			amount: newRow.amount,
+		};
+		dispatch(updateItemPrice(data));
+		return newRow;
+	};
+
+	useEffect(() => {
+		dispatch(getRiders('withprice'));
+		dispatch(getItemsets());
+	}, [dispatch]);
+
+	if (isLoading) return <Spinner />;
+	if (riders.length > 0 && selectRider === '')
+		setSelectRider(riders[0]);
 	return (
-		<Box component={Paper}>
-			<Stack
-				direction='row'
-				spacing={3}
-				justifyContent='space-between'
-			>
-				{isCreating ? (
-					<IconButton onClick={toggleCreating}>
-						<CancelIcon />
-					</IconButton>
-				) : (
-					<IconButton onClick={toggleCreating}>
-						<CreateIcon />
-					</IconButton>
-				)}
-				<RiderTabs
-					tabValue={tabValue}
-					riders={riders}
-					setTabValue={setTabValue}
-					setSelectTab={setSelectTab}
-				/>
-				{isCreating ? (
-					<IconButton onClick={handleSaveClick}>
-						<SaveIcon />
-					</IconButton>
-				) : (
-					<DeleteRiderButton
-						riders={riders}
-						selectTab={selectTab}
-						setSelectTab={setSelectTab}
-						setTabValue={setTabValue}
-					/>
-				)}
-			</Stack>
-			<Stack direction='row' sx={{ margin: 2 }}>
+		<Container>
+			<Typography variant='h5'>
+				Rider&Pricing Manager
+			</Typography>
+			{isLoading ? (
+				<LinearProgress sx={{ my: 2 }} />
+			) : (
+				<Divider sx={{ my: 2 }} />
+			)}
+			<Stack direction='column' alignItems='center'>
+				<Stack
+					direction='row'
+					justifyContent='space-between'
+					width='100%'
+				>
+					{isCreating ? (
+						<IconButton onClick={formClose}>
+							<RemoveIcon />
+						</IconButton>
+					) : (
+						<IconButton onClick={formOpen}>
+							<AddIcon />
+						</IconButton>
+					)}
+					<ButtonGroup>
+						{riders &&
+							riders.map((rider) => (
+								<Button
+									key={rider._id}
+									variant={
+										selectRider._id === rider._id
+											? 'contained'
+											: 'outlined'
+									}
+									onClick={() =>
+										handleClickRider(rider._id)
+									}
+								>
+									{rider.name}
+								</Button>
+							))}
+					</ButtonGroup>
+					{isCreating ? (
+						<IconButton onClick={formSave}>
+							<SaveIcon color='success' />
+						</IconButton>
+					) : (
+						<IconButton onClick={handleDeleteClick}>
+							<DeleteIcon color='error' />
+						</IconButton>
+					)}
+				</Stack>
 				{isCreating ? (
 					<CreateForm
 						formData={formData}
 						setFormData={setFormData}
 					/>
 				) : null}
+				<Divider sx={{ my: 2 }} />
+				<PriceTable
+					selectRider={selectRider}
+					savePrice={savePrice}
+				/>
 			</Stack>
-			<PriceTable
-				user={user}
-				value={tabValue}
-				riders={riders}
-				itemsets={itemsets}
-			/>
-		</Box>
+		</Container>
 	);
 };
 

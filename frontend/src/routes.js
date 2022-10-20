@@ -73,6 +73,11 @@ const routes = [
 		name: 'Expense category Manager',
 		Component: CategoryManager,
 	},
+	{
+		path: '/order-manager/*',
+		name: 'Order Manager',
+		Component: OrderManager,
+	},
 ];
 
 export default routes;

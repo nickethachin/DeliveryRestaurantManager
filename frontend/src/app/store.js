@@ -7,6 +7,7 @@ import goalReducer from '../features/goals/goalSlice';
 import itemReducer from '../features/items/itemSlice';
 import itemsetReducer from '../features/itemsets/itemsetSlice';
 import materialReducer from '../features/materials/materialSlice';
+import orderReducer from '../features/orders/orderSlice';
 import riderReducer from '../features/riders/riderSlice';
 
 export const store = configureStore({
@@ -20,5 +21,6 @@ export const store = configureStore({
 		items: itemReducer,
 		expenseCategories: categoryReducer,
 		expenses: expenseReducer,
+		orders: orderReducer,
 	},
 });

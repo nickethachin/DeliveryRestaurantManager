@@ -39,6 +39,7 @@ app.use('/api/items', require('./routes/itemRoutes'));
 app.use('/api/itemsets', require('./routes/itemsetRoutes'));
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/expenses', require('./routes/expenseRoutes'));
+app.use('/api/orders', require('./routes/orderRoutes'));
 
 app.use(errorHandler);
 

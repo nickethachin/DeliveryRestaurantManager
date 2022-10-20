@@ -1,87 +1,54 @@
 import {
-	Paper,
-	Table,
-	TableBody,
-	TableCell,
-	TableContainer,
-	TableHead,
-	TableRow,
+	Container,
+	Divider,
+	LinearProgress,
+	Stack,
+	Typography,
 } from '@mui/material';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import RiderToggleButton from '../components/RiderToggleButton';
+import OrderCreate from '../components/OrderManager/OrderCreate';
+import OrdersTable from '../components/OrderManager/OrdersTable.jsx';
 import Spinner from '../components/Spinner';
-import {
-	getItemsets,
-	reset as itemsetReset,
-} from '../features/itemsets/itemsetSlice';
+import { getItemsets } from '../features/itemsets/itemsetSlice';
+import { getOrders } from '../features/orders/orderSlice';
+import { getRiders } from '../features/riders/riderSlice';
 
 const OrderManager = () => {
-	const navigate = useNavigate();
 	const dispatch = useDispatch();
-
-	const { user } = useSelector((state) => state.auth);
-
-	// Prepare Itemsets state
-	const {
-		itemsets,
-		isLoading: isItemsetLoading,
-		isError: isItemsetError,
-		message: itemsetMessage,
-	} = useSelector((state) => state.itemsets);
-
-	// Check if logged in
-	useEffect(
-		(navigate) => {
-			if (!user) navigate('/login');
-		},
-		[user]
-	);
-
-	// Get itemsets
 	useEffect(() => {
-		if (isItemsetError) console.log(itemsetMessage);
 		dispatch(getItemsets());
-		return () => dispatch(itemsetReset());
-	}, [navigate, isItemsetError, itemsetMessage, dispatch]);
+		dispatch(getRiders());
+		dispatch(getOrders());
+	}, [dispatch]);
 
-	// Play spinner if loading
-	if (isItemsetLoading) return <Spinner />;
+	const { itemsets, isLoading: isItemsetsLoading } =
+		useSelector((state) => state.itemsets);
+	const { riders, isLoading: isRidersLoading } =
+		useSelector((state) => state.riders);
+	const { orders, isLoading: isOrdersLoading } =
+		useSelector((state) => state.orders);
+	const isLoading =
+		isItemsetsLoading && isRidersLoading && isOrdersLoading;
 
-	// TODO: Continue working on each rider's price
-	function addItem(itemset) {
-		console.log(itemset);
-	}
+	if (!itemsets || !riders) return <Spinner />;
 	return (
-		<>
-			<RiderToggleButton />
-			<TableContainer component={Paper}>
-				<Table stickyHeader>
-					<TableHead>
-						<TableRow>
-							<TableCell>Name</TableCell>
-							<TableCell>Price</TableCell>
-						</TableRow>
-					</TableHead>
-					<TableBody>
-						{itemsets ? (
-							itemsets.map((itemset) => (
-								<TableRow
-									key={itemset._id}
-									onClick={() => addItem(itemset)}
-								>
-									<TableCell>{itemset.name}</TableCell>
-									<TableCell>??</TableCell>
-								</TableRow>
-							))
-						) : (
-							<Spinner />
-						)}
-					</TableBody>
-				</Table>
-			</TableContainer>
-		</>
+		<Container>
+			<Stack
+				direction='column'
+				spacing={2}
+				alignItems='center'
+			>
+				<Typography variant='h5'>Order Manager</Typography>
+				{isLoading ? (
+					<LinearProgress sx={{ my: 2 }} />
+				) : (
+					<Divider sx={{ my: 2 }} />
+				)}
+				<OrderCreate />
+				<OrdersTable orders={orders} />
+			</Stack>
+		</Container>
 	);
 };
 
