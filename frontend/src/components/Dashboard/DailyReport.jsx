@@ -36,6 +36,9 @@ import { useSelector } from 'react-redux';
 // };
 const DailyReport = () => {
 	const { orders } = useSelector((state) => state.orders);
+	const { expenses } = useSelector(
+		(state) => state.expenses
+	);
 	const { riders } = useSelector((state) => state.riders);
 	const [range, setRange] = useState('day');
 	const [rows, setRows] = useState(
@@ -54,33 +57,47 @@ const DailyReport = () => {
 			}, 0);
 
 			// Calculate ingredient cost
-			// const ingredient = thisOrders.reduce((sum, order) => {
-			// 	console.log(order);
-			// 	// Reduce order to get itemset list
-			// 	const number = order.details.reduce(
-			// 		(sum, detail) => {
-			// 			// Reduce itemset to get items list
-			// 			const number = detail.itemset.items.reduce(
-			// 				(sum, itemset) => {
-			// 					// Reduce item to get material amount and cost
-			// 					const number = itemset.item.reduce(
-			// 						(sum, item) => {
-			// 							const number = 1;
-			// 							return (sum += number);
-			// 						},
-			// 						0
-			// 					);
-			// 					return (sum += number);
-			// 				},
-			// 				0
-			// 			);
-			// 			return (sum += number);
-			// 		},
-			// 		0
-			// 	);
-			// 	return (sum += number);
-			// }, 0);
-
+			// order>details[]>itemset>items[]>itemId>materials[]>matId&amount
+			const totalMaterials = [];
+			thisOrders.forEach(({ details }) => {
+				details.forEach(({ itemset }) => {
+					itemset.items.forEach(({ itemId }) => {
+						itemId.materials.forEach((material) => {
+							const matIndex = totalMaterials.findIndex(
+								(mat) => mat._id === material.matId
+							);
+							if (matIndex !== -1) {
+								totalMaterials[matIndex].amount +=
+									material.amount;
+							} else {
+								totalMaterials.push({
+									_id: material.matId,
+									amount: material.amount,
+								});
+							}
+						});
+					});
+				});
+			});
+			const ingredient = totalMaterials.reduce(
+				(sum, mat) => {
+					const expense = expenses.find((exp) => {
+						if ('matId' in exp) {
+							return exp.matId._id === mat._id;
+						}
+						return false;
+					});
+					if (expense) {
+						const priceEach =
+							expense.total / expense.amount;
+						const total = mat.amount * priceEach;
+						return (sum += total);
+					} else {
+						return (sum += 0);
+					}
+				},
+				0
+			);
 			// Calculate gas cost
 			let gas = 0;
 			if (rider.gasCost) {
@@ -116,7 +133,7 @@ const DailyReport = () => {
 				id: rider._id,
 				rider: rider.name,
 				revenue,
-				ingredient: 0,
+				ingredient,
 				gas,
 				work,
 				profit: 0,

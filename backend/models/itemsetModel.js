@@ -10,7 +10,7 @@ const itemsetSchema = mongoose.Schema(
 			{
 				itemId: {
 					type: mongoose.Schema.Types.ObjectId,
-					ref: 'Material',
+					ref: 'Item',
 					required: [true, 'Please specify item id'],
 				},
 				amount: Number,

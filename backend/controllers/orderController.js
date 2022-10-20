@@ -16,7 +16,13 @@ const calculateCost = (prices, itemsetId, amount) => {
 const getOrders = asyncHandler(async (req, res) => {
 	const orders = await Order.find()
 		.populate('rider')
-		.populate('details.itemset');
+		.populate({
+			path: 'details.itemset',
+			populate: {
+				path: 'items.itemId',
+				// populate: { path: 'materials.matId' },
+			},
+		});
 
 	const calculatedOrders = orders.map((order) => {
 		const {
