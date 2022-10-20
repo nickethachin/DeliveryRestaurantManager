@@ -3,20 +3,20 @@ import {
 	FormHelperText,
 	Input,
 	InputLabel,
+	Stack,
 } from '@mui/material';
 
 const CreateForm = ({ formData, setFormData }) => {
-	function handleFormChange(event) {
-		event.preventDefault();
-		const fieldName = event.target.getAttribute('name');
-		const fieldValue = event.target.value;
+	const handleFormChange = ({ target }) => {
+		const fieldName = target.getAttribute('name');
+		const fieldValue = target.value;
 		const newFormData = { ...formData };
 		newFormData[fieldName] = fieldValue;
 		setFormData(newFormData);
-	}
+	};
 
 	return (
-		<>
+		<Stack direction='row' sx={{ mt: 3 }}>
 			<FormControl>
 				<InputLabel htmlFor='name'>Name</InputLabel>
 				<Input
@@ -24,6 +24,7 @@ const CreateForm = ({ formData, setFormData }) => {
 					name='name'
 					aria-describedby='name-helper'
 					onChange={handleFormChange}
+					value={formData.name}
 				/>
 				<FormHelperText id='name-helper'>
 					Rider's name
@@ -34,8 +35,10 @@ const CreateForm = ({ formData, setFormData }) => {
 				<Input
 					id='fees'
 					name='fees'
+					type='number'
 					aria-describedby='fees-helper'
 					onChange={handleFormChange}
+					value={formData.fees}
 				/>
 				<FormHelperText id='fees-helper'>
 					Fees in percentage
@@ -46,8 +49,10 @@ const CreateForm = ({ formData, setFormData }) => {
 				<Input
 					id='tax'
 					name='tax'
+					type='number'
 					aria-describedby='tax-helper'
 					onChange={handleFormChange}
+					value={formData.tax}
 				/>
 				<FormHelperText id='tax-helper'>
 					Tax in percentage
@@ -56,16 +61,18 @@ const CreateForm = ({ formData, setFormData }) => {
 			<FormControl>
 				<InputLabel htmlFor='gas'>Gas Cost</InputLabel>
 				<Input
-					id='gas'
-					name='gas'
+					id='gasCost'
+					name='gasCost'
+					type='number'
 					aria-describedby='gas-helper'
 					onChange={handleFormChange}
+					value={formData.gasCost}
 				/>
 				<FormHelperText id='gas-helper'>
 					(optional) Seperate gas cost from itemset
 				</FormHelperText>
 			</FormControl>
-		</>
+		</Stack>
 	);
 };
 

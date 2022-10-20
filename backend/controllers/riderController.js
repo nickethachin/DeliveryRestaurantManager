@@ -1,19 +1,18 @@
 const asyncHandler = require('express-async-handler');
 
 const Rider = require('../models/riderModel');
+const Itemset = require('../models/itemsetModel');
 
 // @desc    Get riders
 // @route   GET /api/riders
 // @access  Private
 const getRiders = asyncHandler(async (req, res) => {
 	if (req.query.withprice != null) {
-		console.log('get rider with price');
 		const riders = await Rider.find().populate(
 			'price.itemset'
 		);
 		res.status(200).json(riders);
 	} else {
-		console.log('get rider default');
 		const riders = await Rider.find();
 		res.status(200).json(riders);
 	}

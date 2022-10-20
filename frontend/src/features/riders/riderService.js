@@ -52,7 +52,7 @@ const deleteRider = async (riderId, token) => {
 };
 
 // Update Price
-const updatePrice = async (priceData, token) => {
+const updatePrice = async (data, token) => {
 	const config = {
 		headers: {
 			Authorization: `Bearer ${token}`,
@@ -61,7 +61,7 @@ const updatePrice = async (priceData, token) => {
 
 	const response = await axios.post(
 		API_URL + 'price',
-		priceData,
+		data,
 		config
 	);
 
