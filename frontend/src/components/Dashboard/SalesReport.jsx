@@ -1,3 +1,5 @@
+import EqualizerIcon from '@mui/icons-material/Equalizer';
+import GridOnIcon from '@mui/icons-material/GridOn';
 import {
 	Box,
 	Button,
@@ -6,17 +8,19 @@ import {
 	CardContent,
 	CardHeader,
 	Divider,
+	IconButton,
 	Stack,
+	Toolbar,
+	useTheme,
 } from '@mui/material';
-import {
-	DataGrid,
-	GridToolbarContainer,
-} from '@mui/x-data-grid';
+import { DataGrid } from '@mui/x-data-grid';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
+import Chart from 'react-google-charts';
 import { useSelector } from 'react-redux';
 
 const SalesReport = () => {
+	const theme = useTheme();
 	const { riders } = useSelector((state) => state.riders);
 	const { orders } = useSelector((state) => state.orders);
 
@@ -26,6 +30,8 @@ const SalesReport = () => {
 	const [selectRider, setSelectRider] = useState('All');
 	const [range, setRange] = useState('M');
 	const [rows, setRows] = useState([]);
+	const [chartData, setChartData] = useState([]);
+	const [isChart, setIsChart] = useState(false);
 
 	const updateRows = () => {
 		const itemList = [];
@@ -73,59 +79,183 @@ const SalesReport = () => {
 
 	const CustomToolbar = () => {
 		return (
-			<GridToolbarContainer>
-				<Stack
-					direction='row'
-					justifyContent='space-between'
-					width='100%'
+			<Stack
+				direction='row'
+				justifyContent='space-between'
+				width='100%'
+			>
+				<ButtonGroup variant='text'>
+					{riders &&
+						riderList.map((localRider, index) => (
+							<Button
+								key={index}
+								variant={
+									localRider === selectRider
+										? 'contained'
+										: 'text'
+								}
+								onClick={() =>
+									handleSelectRider(localRider)
+								}
+							>
+								{localRider}
+							</Button>
+						))}
+				</ButtonGroup>
+
+				<Button
+					color='primary'
+					variant={isChart ? 'contained' : 'outlined'}
+					endIcon={<EqualizerIcon />}
+					onClick={() =>
+						setIsChart((previous) => !previous)
+					}
 				>
-					<ButtonGroup variant='text'>
-						{riders &&
-							riderList.map((localRider, index) => (
-								<Button
-									key={index}
-									variant={
-										localRider === selectRider
-											? 'contained'
-											: 'text'
-									}
-									onClick={() =>
-										handleSelectRider(localRider)
-									}
-								>
-									{localRider}
-								</Button>
-							))}
-					</ButtonGroup>
-					<ButtonGroup variant='text'>
-						{['y', 'M', 'w', 'd'].map(
-							(localRange, index) => (
-								<Button
-									key={index}
-									variant={
-										localRange === range
-											? 'contained'
-											: 'text'
-									}
-									onClick={() => setRange(localRange)}
-								>
-									{localRange}
-								</Button>
-							)
-						)}
-					</ButtonGroup>
-				</Stack>
-			</GridToolbarContainer>
+					Graph view
+				</Button>
+
+				<ButtonGroup variant='text'>
+					{['y', 'M', 'w', 'd'].map((localRange, index) => (
+						<Button
+							key={index}
+							variant={
+								localRange === range ? 'contained' : 'text'
+							}
+							onClick={() => setRange(localRange)}
+						>
+							{localRange}
+						</Button>
+					))}
+				</ButtonGroup>
+			</Stack>
 		);
 	};
 
+	const chartOption = {
+		legendTextStyle: {
+			color: theme.palette.text.primary,
+			fontSize: theme.typography.body1.fontSize,
+		},
+		backgroundColor: {
+			fill: theme.palette.background.paper,
+		},
+		hAxis: {
+			title: 'Menu',
+			useFormatFromData: true,
+			titleTextStyle: {
+				color: theme.palette.text.primary,
+				fontSize: theme.typography.body1.fontSize,
+
+				italic: true,
+			},
+			textStyle: {
+				color: theme.palette.text.primary,
+				fontSize: theme.typography.body1.fontSize,
+			},
+		},
+		legacyScatterChartLabels: true,
+		vAxes: [
+			{
+				useFormatFromData: true,
+				titleTextStyle: {
+					color: theme.palette.text.primary,
+					fontSize: theme.typography.body1.fontSize,
+
+					italic: true,
+				},
+				textStyle: {
+					color: theme.palette.text.primary,
+					fontSize: theme.typography.body1.fontSize,
+				},
+				title: 'Amount',
+				logScale: false,
+			},
+			{
+				useFormatFromData: true,
+				logScale: false,
+			},
+		],
+		isStacked: true,
+		booleanRole: 'certainty',
+		fontName: theme.typography.body1.fontFamily,
+	};
 	useEffect(() => {
 		updateRows();
 	}, [selectRider, range]);
+
 	useEffect(() => {
 		updateRows();
 	}, []);
 
+	useEffect(() => {
+		const newData = [['Menu']];
+
+		//Setup
+		if (selectRider === 'All') {
+			riders.forEach((rider) =>
+				newData[0].push(rider.name)
+			);
+		} else {
+			newData[0].push('Amount');
+		}
+
+		//Data
+		if (selectRider === 'All') {
+			// Get all orders in range
+			const filteredOrders = orders.filter((order) => {
+				return (
+					dayjs().diff(dayjs(order.date), range, true) <= 1
+				);
+			});
+
+			// Get all possible itemset
+			const possibleItems = [];
+			filteredOrders.forEach((order) => {
+				order.details.forEach((detail) => {
+					possibleItems.push(detail.itemset.name);
+				});
+			});
+
+			// Remove duplicate itemsets and push into newData
+			const itemsList = [...new Set(possibleItems)];
+			itemsList.forEach((item) => newData.push([item]));
+
+			// Replace empty with 0
+			for (let i = 0; i < newData.length; i++) {
+				for (let j = 0; j < newData[0].length; j++) {
+					if (!newData[i][j]) {
+						newData[i][j] = 0;
+					}
+				}
+			}
+
+			// Push itemset's amount into newData
+			filteredOrders.forEach((order) => {
+				// find rider index
+				const riderIndex = newData[0].findIndex(
+					(rider) => rider === order.rider.name
+				);
+				order.details.forEach((detail) => {
+					// find itemset index
+					const itemsetIndex = newData.findIndex(
+						(data) => data[0] === detail.itemset.name
+					);
+					// Push
+					newData[itemsetIndex][riderIndex] +=
+						detail.amount;
+				});
+			});
+		} else {
+			rows.forEach((row) =>
+				newData.push([row.name, row.amount])
+			);
+		}
+		while (newData.length < 8) {
+			newData.splice(1, 0, [' ', 0]);
+			newData.push([' ', 0]);
+		}
+		setChartData(newData);
+	}, [rows]);
 	return (
 		<Card>
 			<CardHeader
@@ -133,17 +263,33 @@ const SalesReport = () => {
 				title='Sales Report'
 			/>
 			<CardContent>
-				<Stack direction='column' alignItems='center'>
+				<Stack
+					direction='column'
+					alignItems='center'
+					width='100%'
+				>
 					<Divider />
-					<Box width='100%'>
-						<DataGrid
-							autoHeight
-							columns={columns}
-							rows={rows}
-							disableSelectionOnClick
-							components={{ Toolbar: CustomToolbar }}
+					<Toolbar sx={{ width: '100%' }}>
+						<CustomToolbar />
+					</Toolbar>
+					{isChart ? (
+						<Chart
+							chartType='ColumnChart'
+							width='100%'
+							height='400px'
+							data={chartData}
+							options={chartOption}
 						/>
-					</Box>
+					) : (
+						<Box width='100%'>
+							<DataGrid
+								autoHeight
+								columns={columns}
+								rows={rows}
+								disableSelectionOnClick
+							/>
+						</Box>
+					)}
 				</Stack>
 			</CardContent>
 		</Card>

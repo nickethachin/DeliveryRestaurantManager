@@ -1,8 +1,14 @@
-import { Box, Divider, Typography } from '@mui/material';
+import {
+	Box,
+	Divider,
+	Stack,
+	Typography,
+} from '@mui/material';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import DailyReport from '../components/Dashboard/DailyReport';
+import SalesChart from '../components/Dashboard/SalesChart';
 import SalesReport from '../components/Dashboard/SalesReport';
 import Spinner from '../components/Spinner';
 import { getExpenses } from '../features/expenses/expenseSlice';
@@ -44,7 +50,9 @@ const Dashboard = () => {
 				<Typography variant='h4'>Dashboard</Typography>
 			</Divider>
 			{/* <DailyReport /> */}
-			<SalesReport />
+			<Stack direction='column' spacing={2}>
+				<SalesReport />
+			</Stack>
 		</Box>
 	);
 };
