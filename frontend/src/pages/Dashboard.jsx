@@ -7,8 +7,6 @@ import {
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import DailyReport from '../components/Dashboard/DailyReport';
-import SalesChart from '../components/Dashboard/SalesChart';
 import SalesReport from '../components/Dashboard/SalesReport';
 import Spinner from '../components/Spinner';
 import { getExpenses } from '../features/expenses/expenseSlice';
