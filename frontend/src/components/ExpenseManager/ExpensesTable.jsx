@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import RepeatIcon from '@mui/icons-material/Repeat';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import dayjs from 'dayjs';
 import { toast } from 'react-toastify';
 import {
@@ -106,7 +106,7 @@ const ExpensesTable = () => {
 				color='success'
 				onClick={() => handleRepeatClick(params)}
 			>
-				<RepeatIcon />
+				<ContentCopyIcon />
 			</IconButton>
 		);
 	};

@@ -7,7 +7,7 @@ const Itemset = require('../models/itemsetModel');
 // @access  Private
 const getItemsets = asyncHandler(async (req, res) => {
 	const itemsets = await Itemset.find();
-
+	//strictPopulate
 	res.status(200).json(itemsets);
 });
 

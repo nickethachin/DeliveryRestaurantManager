@@ -20,9 +20,14 @@ const createItem = asyncHandler(async (req, res) => {
 		res.status(400);
 		throw new Error("Please fill 'name' field.");
 	}
+	if (!req.body.materials) {
+		res.status(400);
+		throw new Error("Please fill 'materials' field.");
+	}
 
 	const item = await Item.create({
 		name: req.body.name,
+		materials: req.body.materials
 	});
 	res.status(200).json(item);
 });

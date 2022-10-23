@@ -1,65 +1,58 @@
 import {
 	Box,
-	Card,
-	CardContent,
 	Divider,
-	Grid,
 	Stack,
 	Typography,
 } from '@mui/material';
 import { useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-const BalanceCard = ({ rider, amount }) => {
-	return (
-		<Card variant='outlined'>
-			<CardContent>
-				<Typography color='text.secondary' gutterBottom>
-					BALANCE
-				</Typography>
-				<Stack
-					direction='row'
-					justifyContent='space-between'
-				>
-					<Typography variant='h5'>{rider}</Typography>
-					<Typography variant='h5'>
-						{Number(amount).toFixed(0).toLocaleString()} ฿
-					</Typography>
-				</Stack>
-			</CardContent>
-		</Card>
-	);
-};
+import DailyReport from '../components/Dashboard/DailyReport';
+import SalesChart from '../components/Dashboard/SalesChart';
+import SalesReport from '../components/Dashboard/SalesReport';
+import Spinner from '../components/Spinner';
+import { getExpenses } from '../features/expenses/expenseSlice';
+import { getOrders } from '../features/orders/orderSlice';
+import { getRiders } from '../features/riders/riderSlice';
 
 const Dashboard = () => {
 	const navigate = useNavigate();
+	const dispatch = useDispatch();
 	const { user } = useSelector((state) => state.auth);
+	const { isLoading: isOrdersLoading } = useSelector(
+		(state) => state.orders
+	);
+	const { sLoading: isRidersLoading } = useSelector(
+		(state) => state.riders
+	);
+	const { sLoading: isExpensesLoading } = useSelector(
+		(state) => state.expenses
+	);
+	const isLoading =
+		isRidersLoading && isOrdersLoading && isExpensesLoading;
+
 	useEffect(() => {
 		if (!user) {
 			navigate('/login');
 		}
 	});
 
+	useEffect(() => {
+		dispatch(getOrders());
+		dispatch(getRiders());
+		dispatch(getExpenses());
+	}, [dispatch]);
+
+	if (isLoading) return <Spinner />;
 	return (
 		<Box sx={{ flexGrow: 1 }}>
 			<Divider>
 				<Typography variant='h4'>Dashboard</Typography>
 			</Divider>
-			<br />
-			<Grid container spacing={2}>
-				<Grid item xs={3}>
-					<BalanceCard rider='Grab' amount='295' />
-				</Grid>
-				<Grid item xs={3}>
-					<BalanceCard rider='Lineman' amount='457.65' />
-				</Grid>
-				<Grid item xs={3}>
-					<BalanceCard rider='Shopee' amount='135' />
-				</Grid>
-				<Grid item xs={3}>
-					<BalanceCard rider='Foodpanda' amount='279.45' />
-				</Grid>
-			</Grid>
+			{/* <DailyReport /> */}
+			<Stack direction='column' spacing={2}>
+				<SalesReport />
+			</Stack>
 		</Box>
 	);
 };

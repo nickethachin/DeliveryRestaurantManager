@@ -25,9 +25,10 @@ const PriceTable = ({ selectRider, savePrice }) => {
 	);
 	const rows = itemsets.map((itemset) => {
 		let amount = 0;
-		const price = selectRider.price.find(
-			(price) => price.itemset._id === itemset._id
-		);
+		const price = selectRider.price.find((p) => {
+			if (!p.itemset) return false;
+			return p.itemset._id === itemset._id;
+		});
 		if (price) amount = price.amount;
 		return {
 			itemset: {

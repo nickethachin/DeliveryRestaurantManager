@@ -7,9 +7,10 @@ import {
 	getItemsets,
 } from '../../features/itemsets/itemsetSlice';
 import GoBackButton from '../GoBackButton';
+import Spinner from '../Spinner';
 import ItemsetForm from './ItemsetForm';
 
-const ItemsetCreate = () => {
+const ItemsetCreate = ({ isLoading }) => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const id = 'blank';
@@ -31,7 +32,7 @@ const ItemsetCreate = () => {
 		dispatch(getItemsets());
 		navigate('/itemset-manager');
 	};
-
+	if (isLoading) return <Spinner />;
 	return (
 		<>
 			<Stack

@@ -20,13 +20,22 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import {
+	NavLink,
+	useLocation,
+	useNavigate,
+} from 'react-router-dom';
 import { logout, reset } from '../features/auth/authSlice';
 
 const SideItem = ({ name, path, icon, sx }) => {
+	const location = useLocation();
 	return (
-		<ListItem disablePadding sx={sx}>
-			<ListItemButton component='a' href={path}>
+		<ListItem
+			disablePadding
+			sx={sx}
+			selected={path === location.pathname}
+		>
+			<ListItemButton component={NavLink} to={path}>
 				{icon && <ListItemIcon>{icon}</ListItemIcon>}
 				<ListItemText primary={name} />
 			</ListItemButton>
