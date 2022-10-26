@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const {
 	getOrders,
+	getIngredientTotals,
 	createOrder,
 	deleteOrder,
 } = require('../controllers/orderController');
@@ -15,5 +16,7 @@ router
 
 router.route('/:id').delete(protect, deleteOrder);
 // 	.put(protect, updateOrder);
+
+router.route('/totals').get(protect, getIngredientTotals);
 
 module.exports = router;

@@ -1,5 +1,6 @@
 const asyncHandler = require('express-async-handler');
 const Order = require('../models/orderModel');
+const { ObjectId } = require('mongodb');
 
 const calculateCost = (prices, itemsetId, amount) => {
 	const priceEach = prices.find(
@@ -61,6 +62,150 @@ const getOrders = asyncHandler(async (req, res) => {
 	res.status(200).json(calculatedOrders);
 });
 
+const getIngredientTotals = asyncHandler(
+	async (req, res) => {
+		const agg = [
+			{
+				$match: {
+					rider: new ObjectId(req.query.riderId),
+					date: {
+						$gte: new Date(req.query.startDate),
+					},
+				},
+			},
+			{
+				$unwind: {
+					path: '$details',
+				},
+			},
+			{
+				$lookup: {
+					from: 'itemsets',
+					localField: 'details.itemset',
+					foreignField: '_id',
+					as: 'itemset',
+				},
+			},
+			{
+				$project: {
+					_id: 1,
+					rider: 1,
+					itemset: {
+						$arrayElemAt: ['$itemset', 0],
+					},
+					itemsetAmount: '$details.amount',
+				},
+			},
+			{
+				$unwind: {
+					path: '$itemset.items',
+				},
+			},
+			{
+				$lookup: {
+					from: 'items',
+					localField: 'itemset.items.itemId',
+					foreignField: '_id',
+					as: 'item',
+				},
+			},
+			{
+				$project: {
+					itemsetAmount: 1,
+					item: {
+						$arrayElemAt: ['$item', 0],
+					},
+				},
+			},
+			{
+				$unwind: {
+					path: '$item.materials',
+				},
+			},
+			{
+				$lookup: {
+					from: 'materials',
+					localField: 'item.materials.matId',
+					foreignField: '_id',
+					as: 'material',
+				},
+			},
+			{
+				$project: {
+					amount: {
+						$multiply: [
+							'$item.materials.amount',
+							'$itemsetAmount',
+						],
+					},
+					material: {
+						$arrayElemAt: ['$material', 0],
+					},
+				},
+			},
+			{
+				$lookup: {
+					from: 'expenses',
+					localField: 'material._id',
+					foreignField: 'matId',
+					as: 'expense',
+					pipeline: [
+						{
+							$sort: {
+								date: -1,
+							},
+						},
+					],
+				},
+			},
+			{
+				$project: {
+					amount: 1,
+					expense: {
+						$arrayElemAt: ['$expense', 0],
+					},
+				},
+			},
+			{
+				$project: {
+					amount: 1,
+					price: {
+						$divide: ['$expense.total', '$expense.amount'],
+					},
+				},
+			},
+			{
+				$project: {
+					amount: 1,
+					price: {
+						$ifNull: ['$price', 0],
+					},
+				},
+			},
+			{
+				$project: {
+					total: {
+						$multiply: ['$amount', '$price'],
+					},
+				},
+			},
+			{
+				$group: {
+					_id: 'total',
+					totals: {
+						$sum: '$total',
+					},
+				},
+			},
+		];
+		try {
+			const total = await Order.aggregate(agg);
+			res.status(200).send(total[0].totals.toString());
+		} catch (error) {
+			throw new Error(error);
+		}
+	}
+);
 // @desc    Create orders
 // @route   POST /api/orders
 // @access  Private
@@ -74,7 +219,6 @@ const createOrder = asyncHandler(async (req, res) => {
 
 	try {
 		const { rider, details, date } = req.body;
-		console.log(date);
 		const createdOrder = await Order.create({
 			rider,
 			details,
@@ -131,6 +275,7 @@ const deleteOrder = asyncHandler(async (req, res) => {
 });
 module.exports = {
 	getOrders,
+	getIngredientTotals,
 	createOrder,
 	deleteOrder,
 };
